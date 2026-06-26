@@ -1,0 +1,8 @@
+# Le dépôt est travaillé depuis Windows, mais les images Docker sont Linux.
+# Un script shell commité en CRLF échoue à l'exécution dans le conteneur avec
+# « bad interpreter: /usr/bin/env bash^M » — on force donc le LF sur tout ce qui est
+# interprété côté Linux, quelle que soit la configuration git locale.
+*.sh    text eol=lf
+Dockerfile text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
