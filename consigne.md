@@ -117,17 +117,20 @@ l'analyse de données pour le **secteur industriel**.
 
 ### Votre mission
 
-1. **Identifier les composants cloud adaptés** et **modéliser l'architecture hybride**.
+1. **Identifier les composants cloud adaptés** (*en utilisant les services Redpanda*) et
+   **modéliser l'architecture hybride**.
 2. **Créer un schéma** montrant les interactions entre le datacenter **on-premise** et le **cloud**.
 3. **Évaluer la compatibilité** de l'infrastructure hybride proposée avec le SI existant, en tenant
    compte des contraintes de **sécurité**, d'**interopérabilité** et de **coûts**.
 
 > *« Cet exercice est entièrement guidé. »*
 
-> ⚠️ **Ambiguïté repérée dans l'énoncé.** Le point 1 de la mission est rédigé sur le site comme
-> « Identifier les composants cloud adaptés (en utilisant les services Redpanda) ». Or tout le
-> contexte parle de **services AWS**. Il s'agit très probablement d'une coquille : on retient
-> **AWS** comme fournisseur cloud cible pour la modélisation. À confirmer avec le mentor.
+> 📌 **Choix retenu : les services Redpanda.** La consigne d'action (point 1 de la mission) indique
+> explicitement « *(en utilisant les services Redpanda)* » — c'est donc ce qu'on suit pour la
+> modélisation de la couche cloud.
+> *Note pour le mentor :* le **récit de contexte** mentionne aussi AWS (« la flexibilité du cloud,
+> en particulier avec les services AWS » ; « venant de migrer chez AWS et Redpanda »), mais pas la
+> consigne d'action. Si le mentor attend explicitement AWS, le schéma se transpose facilement.
 
 ### Livrables de l'Exercice 1
 

@@ -1,7 +1,7 @@
 # Modélisez une infrastructure dans le cloud
 
 > Projet **Data Engineer** — OpenClassrooms.
-> Conception d'une **infrastructure de données hybride** (on-premise ↔ AWS) et POC d'un
+> Conception d'une **infrastructure de données hybride** (on-premise ↔ cloud / services Redpanda) et POC d'un
 > **pipeline ETL temps réel** de gestion de tickets clients avec **Redpanda + PySpark**, le tout
 > conteneurisé avec **Docker**.
 
@@ -13,8 +13,9 @@
 ## 🎯 Objectif
 
 L'entreprise fictive **InduTechData** veut moderniser sa gestion de données (IoT, +50 Go/mois en
-temps réel) en s'appuyant sur le cloud (AWS) **sans casser** son SI on-premise existant (SQL Server,
-SAN, Active Directory, ERP/CRM). Le projet se découpe en deux exercices :
+temps réel) en s'appuyant sur le cloud (**services Redpanda**, conformément à la consigne d'action)
+**sans casser** son SI on-premise existant (SQL Server, SAN, Active Directory, ERP/CRM). Le projet
+se découpe en deux exercices :
 
 1. **Exercice 1 — Modélisation** d'une architecture hybride + évaluation de compatibilité.
 2. **Exercice 2 — POC** d'un pipeline ETL temps réel (tickets clients) : Redpanda → PySpark →
@@ -91,10 +92,10 @@ Légende : ⬜ à faire · 🟦 en cours · ✅ terminé
 ### Phase 0 — Cadrage & setup
 - ✅ Récupération et synthèse des consignes officielles ([`consigne.md`](consigne.md))
 - ✅ Création du dépôt + structure + plan de conversations
-- ⬜ Vérification de l'environnement (Docker démarré, dépendances Python)
+- ✅ Vérification de l'environnement (Docker 29 + Compose v5, Python 3.12) — *Conversation A validée*
 
 ### Exercice 1 — Modélisation de l'architecture hybride
-- ⬜ Identifier et sélectionner les composants cloud AWS (mapping on-premise → cloud)
+- ⬜ Identifier et sélectionner les composants cloud **Redpanda** (mapping on-premise → cloud)
 - ⬜ Réaliser le **schéma d'architecture hybride** (PDF/PNG)
 - ⬜ Rédiger le **document d'évaluation de compatibilité** (sécurité, interopérabilité, coûts)
 

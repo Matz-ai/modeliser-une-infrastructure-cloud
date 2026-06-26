@@ -25,42 +25,26 @@
 
 | Conv. | Titre | Exercice | Livrable(s) visé(s) |
 |------|-------|----------|---------------------|
-| **A** | Cadrage & mise en place de l'environnement | — | Environnement prêt, repo opérationnel |
+| ~~**A**~~ | ~~Cadrage & mise en place de l'environnement~~ ✅ *validée (Docker + Python OK)* | — | — |
 | **B** | Modélisation de l'architecture hybride | Ex. 1 | Schéma (PDF/PNG) + doc d'évaluation de compatibilité |
 | **C** | Redpanda + producteur de tickets | Ex. 2 — Étape 1 | Cluster Redpanda, topic `client_tickets`, producteur Python |
 | **D** | Traitement PySpark | Ex. 2 — Étape 2 | Script PySpark (lecture, transformations, agrégations) |
 | **E** | Export + Conteneurisation | Ex. 2 — Étapes 3 & 4 | Export JSON/Parquet, Dockerfiles + docker-compose |
 | **F** | Documentation, Mermaid & vidéo + packaging | Ex. 2 — Étape 5 | README + diagramme Mermaid + vidéo + zip des livrables |
 
-> Ordre conseillé : A → B → C → D → E → F. B (modélisation) peut être faite en parallèle de C/D
-> si tu préfères, car elle est indépendante du code.
+> Ordre conseillé : **B → C → D → E → F** (la Conversation A est déjà validée). B (modélisation)
+> peut être faite en parallèle de C/D si tu préfères, car elle est indépendante du code.
 
 ---
 
-## 🟦 Conversation A — Cadrage & mise en place de l'environnement
+## ✅ Conversation A — Cadrage & mise en place de l'environnement *(déjà validée)*
 
-**Objectif** : avoir un environnement de travail 100 % fonctionnel et bien comprendre le projet
-avant d'écrire la moindre ligne de pipeline.
+Étape de cadrage **considérée comme faite** : l'environnement est confirmé fonctionnel
+(**Docker 29 + Compose v5**, **Python 3.12**) et le dépôt est opérationnel. Pas besoin d'y revenir —
+on démarre directement à la **Conversation B**.
 
-**Ce que tu vas apprendre** : rôle de chaque brique (Redpanda, Spark, Docker), pourquoi une archi
-hybride, comment s'organise un dépôt de projet data engineering.
-
-**Au programme**
-- Vérifier Docker Desktop (démarré), Python, et préparer un environnement virtuel Python.
-- Démarrer un premier conteneur Redpanda « jetable » pour valider que Docker fonctionne.
-- Tour d'horizon de l'architecture cible et de la logique du pipeline.
-- 📸 Screenshots : `docker version`, conteneur Redpanda qui tourne, console Redpanda.
-
-**Definition of done** : Docker tourne, environnement Python prêt, tu sais expliquer le flux global.
-
-> **Prompt de démarrage à copier :**
-> ```
-> Projet OpenClassrooms "Modélisez une infrastructure dans le cloud". Lis consigne.md et
-> docs/plan-conversations.md. On fait la Conversation A : cadrage + mise en place de
-> l'environnement (Docker, Python, premier test Redpanda). Guide-moi pas à pas, je veux exécuter
-> moi-même et prendre des screenshots, et que tu m'expliques chaque étape. Mets à jour l'avancement
-> du README à la fin.
-> ```
+> *Note : Java n'est pas installé sur l'hôte ; ce n'est pas bloquant car PySpark tournera dans un
+> conteneur Docker (qui embarque Java), conformément à l'étape de conteneurisation.*
 
 ---
 
@@ -69,13 +53,14 @@ hybride, comment s'organise un dépôt de projet data engineering.
 **Objectif** : produire les **2 livrables de l'Exercice 1** : le schéma d'architecture hybride et le
 document d'évaluation de compatibilité.
 
-**Ce que tu vas apprendre** : mapping on-premise → services AWS, notions de sécurité (chiffrement,
-IAM/AD, VPN/Direct Connect), interopérabilité et raisonnement coûts.
+**Ce que tu vas apprendre** : mapping on-premise → **services Redpanda** (Redpanda Cloud,
+connecteurs/Connect…), notions de sécurité (chiffrement, SASL/RBAC, intégration Active Directory,
+réseau privé), interopérabilité et raisonnement coûts.
 
 **Au programme**
 - Analyser le SI on-premise d'InduTechData (SQL Server 40 To, SAN 10 To, Active Directory, ERP/CRM).
-- Choisir et **justifier** les composants AWS (ingestion IoT, stockage, traitement, identité,
-  réseau hybride…).
+- Choisir et **justifier** les composants **Redpanda** (ingestion IoT temps réel, connecteurs,
+  traitement/streaming, sécurité & identité, réseau hybride…).
 - Construire le **schéma** on-premise ↔ cloud (outil au choix → export **PDF/PNG**).
 - Rédiger le **document d'évaluation de compatibilité** (sécurité, interopérabilité, coûts).
 - 📸 Screenshots : le schéma final, étapes de construction.
@@ -86,10 +71,11 @@ IAM/AD, VPN/Direct Connect), interopérabilité et raisonnement coûts.
 > **Prompt de démarrage à copier :**
 > ```
 > Projet OpenClassrooms "Modélisez une infrastructure dans le cloud". Lis consigne.md (section
-> Exercice 1). On fait la Conversation B : modélisation de l'architecture hybride on-premise ↔ AWS.
-> Aide-moi à choisir/justifier les composants AWS, à produire le schéma (PDF/PNG) et le document
-> d'évaluation de compatibilité (sécurité, interopérabilité, coûts). Explique-moi les choix, je
-> prends des screenshots. Mets à jour le README à la fin.
+> Exercice 1). On fait la Conversation B : modélisation de l'architecture hybride on-premise ↔ cloud
+> en utilisant les services Redpanda (comme demandé dans la consigne). Aide-moi à choisir/justifier
+> les composants Redpanda, à produire le schéma (PDF/PNG) et le document d'évaluation de
+> compatibilité (sécurité, interopérabilité, coûts). Explique-moi les choix, je prends des
+> screenshots. Mets à jour le README à la fin.
 > ```
 
 ---
