@@ -32,7 +32,7 @@ se découpe en deux exercices :
 | Langage | **Python 3.12** |
 | Conteneurisation / orchestration | **Docker + Docker Compose** |
 | Formats d'export | **JSON / Parquet** |
-| Schéma d'architecture | à définir (draw.io / `diagrams` / Excalidraw) |
+| Schéma d'architecture | **SVG** (export PDF/PNG via navigateur / Edge headless) |
 | Schéma de flux (pipeline) | **Mermaid** (dans ce README) |
 
 ---
@@ -95,9 +95,9 @@ Légende : ⬜ à faire · 🟦 en cours · ✅ terminé
 - ✅ Vérification de l'environnement (Docker 29 + Compose v5, Python 3.12) — *Conversation A validée*
 
 ### Exercice 1 — Modélisation de l'architecture hybride
-- ⬜ Identifier et sélectionner les composants cloud **Redpanda** (mapping on-premise → cloud)
-- ⬜ Réaliser le **schéma d'architecture hybride** (PDF/PNG)
-- ⬜ Rédiger le **document d'évaluation de compatibilité** (sécurité, interopérabilité, coûts)
+- ✅ Identifier et sélectionner les composants cloud **Redpanda** (mapping on-premise → cloud) — voir [`evaluation-compatibilite.md`](docs/exercice1-modelisation/evaluation-compatibilite.md#2-composants-retenus-et-justification)
+- 🟦 Réaliser le **schéma d'architecture hybride** — source [`architecture-hybride.svg`](docs/exercice1-modelisation/architecture-hybride.svg) faite ; export **PDF/PNG** à générer
+- ✅ Rédiger le **document d'évaluation de compatibilité** (sécurité, interopérabilité, coûts) — [`evaluation-compatibilite.md`](docs/exercice1-modelisation/evaluation-compatibilite.md)
 
 ### Exercice 2 — Pipeline ETL temps réel
 - ⬜ **Étape 1** — Cluster Redpanda + topic `client_tickets` + producteur Python
