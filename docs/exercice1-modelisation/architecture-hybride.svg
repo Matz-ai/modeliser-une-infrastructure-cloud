@@ -1,0 +1,261 @@
+<svg viewBox="0 0 1780 1120" width="1780" height="1120" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/>
+    </marker>
+    <marker id="arrowId" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c3aed"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1780" height="1120" fill="#ffffff"/>
+
+  <!-- ===================== TITRE ===================== -->
+  <text x="890" y="46" text-anchor="middle" font-size="27" font-weight="700" fill="#1f2937">InduTechData &#8212; Architecture hybride on-premise &#8596; Cloud AWS</text>
+  <text x="890" y="76" text-anchor="middle" font-size="14" fill="#6b7280">Modernisation temps r&#233;el de la donn&#233;e : services AWS + Redpanda &#183; Exercice 1, &#201;tapes 1 et 2 &#183; r&#233;gion eu-west-3 (Paris)</text>
+
+  <!-- ===================== ZONE ON-PREMISE ===================== -->
+  <rect x="30" y="110" width="530" height="790" rx="16" fill="#eef2f7" stroke="#94a3b8" stroke-width="2"/>
+  <text x="295" y="146" text-anchor="middle" font-size="18" font-weight="700" fill="#334155">Datacenter on-premise (SI existant)</text>
+
+  <!-- Capteurs IoT -->
+  <rect x="55" y="175" width="200" height="70" rx="8" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
+  <text x="155" y="205" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Capteurs IoT</text>
+  <text x="155" y="226" text-anchor="middle" font-size="11" fill="#475569">+50 Go/mois, flux continu</text>
+
+  <!-- ERP / CRM -->
+  <rect x="55" y="265" width="200" height="70" rx="8" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
+  <text x="155" y="295" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Serveurs ERP / CRM</text>
+  <text x="155" y="316" text-anchor="middle" font-size="11" fill="#475569">compta, RH, relation client</text>
+
+  <!-- SQL Server -->
+  <rect x="55" y="365" width="200" height="70" rx="8" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
+  <text x="155" y="395" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Cluster SQL Server</text>
+  <text x="155" y="416" text-anchor="middle" font-size="11" fill="#475569">40 To &#8212; donn&#233;es critiques</text>
+
+  <!-- SAN -->
+  <rect x="55" y="465" width="200" height="70" rx="8" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
+  <text x="155" y="495" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Baie de stockage SAN</text>
+  <text x="155" y="516" text-anchor="middle" font-size="11" fill="#475569">10 To &#8212; non structur&#233;</text>
+
+  <!-- Active Directory -->
+  <rect x="55" y="580" width="200" height="85" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.8"/>
+  <text x="155" y="610" text-anchor="middle" font-size="13" font-weight="700" fill="#5b21b6">Active Directory</text>
+  <text x="155" y="631" text-anchor="middle" font-size="11" fill="#6d28d9">source de v&#233;rit&#233; des identit&#233;s</text>
+  <text x="155" y="650" text-anchor="middle" font-size="11" fill="#6d28d9">Kerberos &#183; LDAP</text>
+
+  <!-- Utilisateurs -->
+  <rect x="300" y="690" width="230" height="66" rx="8" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.5"/>
+  <text x="415" y="717" text-anchor="middle" font-size="12.5" font-weight="700" fill="#5b21b6">Utilisateurs &amp; administrateurs</text>
+  <text x="415" y="737" text-anchor="middle" font-size="10.5" fill="#6d28d9">postes de travail, analystes m&#233;tier</text>
+
+  <!-- Passerelle de collecte -->
+  <rect x="300" y="175" width="230" height="360" rx="10" fill="#e2e8f0" stroke="#475569" stroke-width="1.5"/>
+  <text x="415" y="206" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Passerelle de collecte (edge)</text>
+  <text x="316" y="252" font-size="11" font-weight="700" fill="#334155">&#8226; Agent Redpanda Connect</text>
+  <text x="326" y="270" font-size="10.5" fill="#475569">source MQTT / HTTP</text>
+  <text x="316" y="322" font-size="11" font-weight="700" fill="#334155">&#8226; Lecteur CDC</text>
+  <text x="326" y="340" font-size="10.5" fill="#475569">journal de transactions</text>
+  <text x="326" y="357" font-size="10.5" fill="#475569">tables ERP / CRM cibl&#233;es</text>
+  <text x="316" y="405" font-size="11" font-weight="700" fill="#334155">&#8226; Agent AWS DataSync</text>
+  <text x="326" y="423" font-size="10.5" fill="#475569">montage SMB / NFS du SAN</text>
+  <text x="316" y="475" font-size="10.5" fill="#475569">Bufferise, chiffre en TLS et</text>
+  <text x="316" y="493" font-size="10.5" fill="#475569">pousse vers le cloud</text>
+
+  <!-- Note 40 To -->
+  <rect x="55" y="790" width="475" height="58" rx="8" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.2"/>
+  <text x="70" y="814" font-size="10.5" font-weight="700" fill="#854d0e">&#9888; Les 40 To de SQL Server ne sont pas migr&#233;s : seul le flux de</text>
+  <text x="70" y="833" font-size="10.5" fill="#854d0e">changements (CDC) des tables ERP / CRM cibl&#233;es part vers le cloud.</text>
+
+  <!-- ===================== LIAISON PRIVÉE ===================== -->
+  <rect x="590" y="175" width="100" height="490" rx="14" fill="#fef3c7" stroke="#d97706" stroke-width="1.8"/>
+  <text x="640" y="245" text-anchor="middle" font-size="26">&#128274;</text>
+  <text x="640" y="282" text-anchor="middle" font-size="11.5" font-weight="700" fill="#92400e">Liaison priv&#233;e</text>
+  <text x="640" y="303" text-anchor="middle" font-size="10.5" fill="#92400e">AWS Direct Connect</text>
+  <text x="640" y="319" text-anchor="middle" font-size="10.5" fill="#92400e">1 Gbps d&#233;di&#233;</text>
+  <text x="640" y="337" text-anchor="middle" font-size="10" fill="#a16207">(+ VPN de secours)</text>
+  <text x="640" y="370" text-anchor="middle" font-size="10.5" font-weight="700" fill="#92400e">mTLS bout en bout</text>
+  <text x="640" y="394" text-anchor="middle" font-size="10" fill="#a16207">VPC peering</text>
+  <text x="640" y="411" text-anchor="middle" font-size="9.5" fill="#a16207">aucune exposition</text>
+  <text x="640" y="426" text-anchor="middle" font-size="9.5" fill="#a16207">&#224; l'Internet public</text>
+
+  <!-- ===================== ZONE CLOUD AWS ===================== -->
+  <rect x="770" y="110" width="970" height="790" rx="16" fill="#fffbf5" stroke="#ff9900" stroke-width="2"/>
+  <text x="1255" y="146" text-anchor="middle" font-size="18" font-weight="700" fill="#b45309">Cloud AWS &#8212; compte InduTechData &#183; r&#233;gion eu-west-3 (Paris)</text>
+
+  <!-- A1 : groupe Redpanda -->
+  <rect x="800" y="180" width="430" height="320" rx="12" fill="#ffffff" stroke="#e2401b" stroke-width="2"/>
+  <path d="M 800 220 L 800 192 Q 800 180 812 180 L 1218 180 Q 1230 180 1230 192 L 1230 220 Z" fill="#e2401b"/>
+  <text x="1015" y="207" text-anchor="middle" font-size="12.5" font-weight="700" fill="#ffffff">Redpanda Cloud &#8212; BYOC (plan de donn&#233;es dans le VPC client)</text>
+  <text x="1015" y="241" text-anchor="middle" font-size="10.5" fill="#6b7280">Cluster compatible Kafka &#183; partitions &amp; r&#233;plication &#183; r&#233;tention 7 jours</text>
+
+  <rect x="812" y="252" width="200" height="32" rx="6" fill="#fff1ee" stroke="#e2401b" stroke-width="1"/>
+  <text x="912" y="272" text-anchor="middle" font-size="10.5" fill="#b3301a">Connect &#8212; source MQTT / HTTP</text>
+  <rect x="1018" y="252" width="200" height="32" rx="6" fill="#fff1ee" stroke="#e2401b" stroke-width="1"/>
+  <text x="1118" y="272" text-anchor="middle" font-size="10.5" fill="#b3301a">Connect &#8212; source CDC</text>
+
+  <text x="812" y="304" font-size="9.5" fill="#94a3b8">TOPICS</text>
+  <rect x="812" y="310" width="196" height="28" rx="6" fill="#fee2e2" stroke="#e2401b" stroke-width="1"/>
+  <text x="910" y="329" text-anchor="middle" font-size="10.5" fill="#b3301a">iot.sensors</text>
+  <rect x="1022" y="310" width="196" height="28" rx="6" fill="#fee2e2" stroke="#e2401b" stroke-width="1"/>
+  <text x="1120" y="329" text-anchor="middle" font-size="10.5" fill="#b3301a">erp.cdc</text>
+  <rect x="812" y="344" width="196" height="28" rx="6" fill="#fee2e2" stroke="#e2401b" stroke-width="1"/>
+  <text x="910" y="363" text-anchor="middle" font-size="10.5" fill="#b3301a">client_tickets</text>
+  <rect x="1022" y="344" width="196" height="28" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1"/>
+  <text x="1120" y="363" text-anchor="middle" font-size="10.5" fill="#475569">app.logs</text>
+
+  <rect x="812" y="382" width="406" height="30" rx="6" fill="#fde68a" stroke="#d97706" stroke-width="1"/>
+  <text x="1015" y="402" text-anchor="middle" font-size="10.5" font-weight="700" fill="#92400e">Schema Registry &#8212; Avro / JSON / Protobuf</text>
+  <rect x="812" y="418" width="406" height="30" rx="6" fill="#fecaca" stroke="#dc2626" stroke-width="1"/>
+  <text x="1015" y="438" text-anchor="middle" font-size="10" font-weight="700" fill="#991b1b">SASL/OIDC &#183; RBAC + ACL par topic &#183; TLS en transit &#183; KMS au repos</text>
+  <rect x="812" y="454" width="406" height="32" rx="6" fill="#f8fafc" stroke="#94a3b8" stroke-width="1"/>
+  <text x="1015" y="475" text-anchor="middle" font-size="10.5" fill="#475569">Redpanda Console &#8212; supervision, lag, gestion des ACL</text>
+
+  <!-- A2 : PySpark -->
+  <rect x="800" y="560" width="430" height="90" rx="10" fill="#ffffff" stroke="#16a34a" stroke-width="1.8"/>
+  <text x="1015" y="589" text-anchor="middle" font-size="13" font-weight="700" fill="#15803d">PySpark &#8212; Spark Structured Streaming</text>
+  <text x="1015" y="610" text-anchor="middle" font-size="10.5" fill="#475569">ETL temps r&#233;el : transformations et agr&#233;gations (Exercice 2)</text>
+  <text x="1015" y="629" text-anchor="middle" font-size="10.5" fill="#475569">&#233;crit les exports JSON / Parquet sur Amazon S3</text>
+
+  <!-- A3 : identité -->
+  <rect x="800" y="690" width="430" height="165" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.8"/>
+  <text x="1015" y="716" text-anchor="middle" font-size="13" font-weight="700" fill="#5b21b6">Gestion unifi&#233;e des identit&#233;s</text>
+  <rect x="814" y="729" width="402" height="54" rx="7" fill="#ffffff" stroke="#a78bfa" stroke-width="1.2"/>
+  <text x="1015" y="751" text-anchor="middle" font-size="12" font-weight="700" fill="#5b21b6">AWS Managed Microsoft AD</text>
+  <text x="1015" y="771" text-anchor="middle" font-size="10" fill="#6d28d9">relation d'approbation (trust) avec l'AD on-premise</text>
+  <rect x="814" y="791" width="402" height="54" rx="7" fill="#ffffff" stroke="#a78bfa" stroke-width="1.2"/>
+  <text x="1015" y="813" text-anchor="middle" font-size="12" font-weight="700" fill="#5b21b6">IAM Identity Center</text>
+  <text x="1015" y="833" text-anchor="middle" font-size="10" fill="#6d28d9">groupes AD &#8594; r&#244;les IAM : Redshift, S3, Redpanda, console</text>
+
+  <!-- B1 : Amazon S3 -->
+  <rect x="1280" y="180" width="430" height="130" rx="10" fill="#ffffff" stroke="#2563eb" stroke-width="1.8"/>
+  <text x="1495" y="209" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1d4ed8">Amazon S3 &#8212; stockage objet (data lake)</text>
+  <text x="1294" y="234" font-size="10" fill="#334155">&#9316; Tiered Storage + sink Connect &#8212; Parquet / Iceberg, micro-batch 5 min</text>
+  <text x="1294" y="254" font-size="10" fill="#334155">&#9314; R&#233;plication de la baie SAN par AWS DataSync &#8212; batch nocturne</text>
+  <text x="1294" y="274" font-size="10" fill="#475569">Logs &#183; IoT brut &#183; fichiers utilisateurs &#183; r&#233;tention 365 jours</text>
+  <text x="1294" y="294" font-size="10" fill="#475569">Cycle de vie Standard &#8594; Glacier IR (&gt; 90 j) &#183; chiffrement SSE-KMS</text>
+
+  <!-- B2 : Amazon Redshift -->
+  <rect x="1280" y="370" width="430" height="140" rx="10" fill="#ffffff" stroke="#2563eb" stroke-width="1.8"/>
+  <text x="1495" y="399" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1d4ed8">Amazon Redshift Serverless</text>
+  <text x="1294" y="424" font-size="10" fill="#334155">Entrep&#244;t analytique &#8212; requ&#234;tes SQL complexes sur l'historique</text>
+  <text x="1294" y="444" font-size="10" fill="#334155">&#9317; Chargement depuis S3 par COPY / auto-copy (batch)</text>
+  <text x="1294" y="464" font-size="10" fill="#475569">Redshift Spectrum : lecture directe des tables Iceberg sur S3</text>
+  <text x="1294" y="484" font-size="10" fill="#475569">Capacit&#233; &#233;lastique (RPU) &#183; mise en pause automatique</text>
+
+  <!-- B3 : restitution -->
+  <rect x="1280" y="560" width="430" height="90" rx="10" fill="#ffffff" stroke="#2563eb" stroke-width="1.8"/>
+  <text x="1495" y="589" text-anchor="middle" font-size="13" font-weight="700" fill="#1d4ed8">Restitution &#8212; BI &amp; rapports</text>
+  <text x="1495" y="610" text-anchor="middle" font-size="10.5" fill="#475569">tableaux de bord, requ&#234;tes analystes, exports</text>
+  <text x="1495" y="629" text-anchor="middle" font-size="10.5" fill="#475569">acc&#232;s authentifi&#233; via IAM Identity Center</text>
+
+  <!-- B4 : observabilité & FinOps -->
+  <rect x="1280" y="690" width="430" height="165" rx="10" fill="#ecfdf5" stroke="#0f766e" stroke-width="1.8"/>
+  <text x="1495" y="716" text-anchor="middle" font-size="13" font-weight="700" fill="#0f766e">Observabilit&#233; &amp; ma&#238;trise des co&#251;ts</text>
+  <rect x="1294" y="729" width="402" height="36" rx="7" fill="#ffffff" stroke="#5eead4" stroke-width="1.2"/>
+  <text x="1495" y="752" text-anchor="middle" font-size="10.5" fill="#134e4a">Amazon CloudWatch &#8212; m&#233;triques, logs, alarmes</text>
+  <rect x="1294" y="773" width="402" height="36" rx="7" fill="#ffffff" stroke="#5eead4" stroke-width="1.2"/>
+  <text x="1495" y="796" text-anchor="middle" font-size="10.5" fill="#134e4a">AWS Budgets &#8212; seuils mensuels + alertes</text>
+  <rect x="1294" y="817" width="402" height="32" rx="7" fill="#ffffff" stroke="#5eead4" stroke-width="1.2"/>
+  <text x="1495" y="838" text-anchor="middle" font-size="10.5" fill="#134e4a">AWS Cost Explorer &#8212; analyse par tag / composant</text>
+
+  <!-- ===================== FLUX INTERNES ON-PREMISE ===================== -->
+  <line x1="155" y1="337" x2="155" y2="361" stroke="#334155" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="163" y="354" font-size="9" fill="#64748b">&#233;critures m&#233;tier</text>
+  <line x1="257" y1="210" x2="296" y2="240" stroke="#334155" stroke-width="2.2" marker-end="url(#arrow)"/>
+  <line x1="257" y1="400" x2="296" y2="330" stroke="#334155" stroke-width="2.2" marker-end="url(#arrow)"/>
+  <line x1="257" y1="500" x2="296" y2="405" stroke="#334155" stroke-width="2.2" stroke-dasharray="10,5" marker-end="url(#arrow)"/>
+  <line x1="330" y1="688" x2="205" y2="668" stroke="#7c3aed" stroke-width="1.8" stroke-dasharray="6,4" marker-end="url(#arrowId)"/>
+
+  <!-- ===================== FLUX TRAVERSANTS ===================== -->
+  <!-- 1 : IoT temps réel -->
+  <line x1="532" y1="240" x2="588" y2="240" stroke="#334155" stroke-width="2.4"/>
+  <line x1="692" y1="240" x2="796" y2="240" stroke="#334155" stroke-width="2.4" marker-end="url(#arrow)"/>
+  <text x="738" y="230" text-anchor="middle" font-size="9.5" font-weight="700" fill="#475569">temps r&#233;el</text>
+  <circle cx="560" cy="240" r="11" fill="#ffffff" stroke="#334155" stroke-width="1.6"/>
+  <text x="560" y="244" text-anchor="middle" font-size="11" font-weight="700" fill="#334155">1</text>
+
+  <!-- 2 : CDC temps réel -->
+  <line x1="532" y1="330" x2="588" y2="330" stroke="#334155" stroke-width="2.4"/>
+  <line x1="692" y1="330" x2="796" y2="330" stroke="#334155" stroke-width="2.4" marker-end="url(#arrow)"/>
+  <text x="738" y="320" text-anchor="middle" font-size="9.5" font-weight="700" fill="#475569">temps r&#233;el</text>
+  <circle cx="560" cy="330" r="11" fill="#ffffff" stroke="#334155" stroke-width="1.6"/>
+  <text x="560" y="334" text-anchor="middle" font-size="11" font-weight="700" fill="#334155">2</text>
+
+  <!-- 3 : SAN -> S3, batch -->
+  <line x1="532" y1="405" x2="588" y2="405" stroke="#334155" stroke-width="2.4" stroke-dasharray="10,5"/>
+  <polyline points="692,405 712,405 712,886 1255,886 1255,285 1274,285" fill="none" stroke="#334155" stroke-width="2.4" stroke-dasharray="10,5" marker-end="url(#arrow)"/>
+  <text x="985" y="878" text-anchor="middle" font-size="9.5" font-weight="700" fill="#475569">batch nocturne &#8212; AWS DataSync (SMB/NFS &#8594; HTTPS/TLS)</text>
+  <circle cx="560" cy="405" r="11" fill="#ffffff" stroke="#334155" stroke-width="1.6"/>
+  <text x="560" y="409" text-anchor="middle" font-size="11" font-weight="700" fill="#334155">3</text>
+
+  <!-- 4 : trust Active Directory -->
+  <polyline points="257,620 745,620 745,756 808,756" fill="none" stroke="#7c3aed" stroke-width="2.2" stroke-dasharray="6,4" marker-end="url(#arrowId)"/>
+  <text x="730" y="611" text-anchor="middle" font-size="8.5" font-weight="700" fill="#7c3aed">Kerberos/LDAPS</text>
+  <circle cx="575" cy="620" r="11" fill="#ffffff" stroke="#7c3aed" stroke-width="1.6"/>
+  <text x="575" y="624" text-anchor="middle" font-size="11" font-weight="700" fill="#7c3aed">4</text>
+
+  <!-- 5 : Redpanda -> S3 -->
+  <line x1="1232" y1="230" x2="1276" y2="230" stroke="#334155" stroke-width="2.4" marker-end="url(#arrow)"/>
+  <circle cx="1253" cy="230" r="11" fill="#ffffff" stroke="#334155" stroke-width="1.6"/>
+  <text x="1253" y="234" text-anchor="middle" font-size="11" font-weight="700" fill="#334155">5</text>
+
+  <!-- 6 : S3 -> Redshift -->
+  <line x1="1495" y1="312" x2="1495" y2="366" stroke="#334155" stroke-width="2.4" stroke-dasharray="6,4" marker-end="url(#arrow)"/>
+  <circle cx="1495" cy="339" r="11" fill="#ffffff" stroke="#334155" stroke-width="1.6"/>
+  <text x="1495" y="343" text-anchor="middle" font-size="11" font-weight="700" fill="#334155">6</text>
+  <text x="1515" y="343" font-size="9.5" font-weight="700" fill="#475569">batch &#8212; COPY</text>
+
+  <!-- 7 : Redpanda -> PySpark -->
+  <line x1="1015" y1="502" x2="1015" y2="556" stroke="#334155" stroke-width="2.4" marker-end="url(#arrow)"/>
+  <circle cx="1015" cy="529" r="11" fill="#ffffff" stroke="#334155" stroke-width="1.6"/>
+  <text x="1015" y="533" text-anchor="middle" font-size="11" font-weight="700" fill="#334155">7</text>
+  <text x="1034" y="533" font-size="9.5" font-weight="700" fill="#475569">temps r&#233;el &#8212; API Kafka</text>
+
+  <!-- Redshift -> restitution -->
+  <line x1="1495" y1="512" x2="1495" y2="556" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="1512" y="538" font-size="9.5" fill="#64748b">requ&#234;tes SQL</text>
+
+  <!-- ===================== LÉGENDE ===================== -->
+  <rect x="30" y="920" width="1710" height="175" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+  <text x="50" y="948" font-size="13" font-weight="700" fill="#1f2937">L&#233;gende des flux &#8212; mode de transfert et protocole</text>
+
+  <line x1="430" y1="943" x2="470" y2="943" stroke="#334155" stroke-width="2.4" marker-end="url(#arrow)"/>
+  <text x="478" y="947" font-size="11" fill="#334155">Flux temps r&#233;el (continu)</text>
+  <line x1="660" y1="943" x2="700" y2="943" stroke="#334155" stroke-width="2.4" stroke-dasharray="10,5" marker-end="url(#arrow)"/>
+  <text x="708" y="947" font-size="11" fill="#334155">Flux batch (planifi&#233;)</text>
+  <line x1="880" y1="943" x2="920" y2="943" stroke="#7c3aed" stroke-width="2.2" stroke-dasharray="6,4" marker-end="url(#arrowId)"/>
+  <text x="928" y="947" font-size="11" fill="#334155">F&#233;d&#233;ration d'identit&#233;</text>
+  <text x="1100" y="948" font-size="13">&#128274;</text>
+  <text x="1124" y="947" font-size="11" fill="#334155">Liaison priv&#233;e chiffr&#233;e (Direct Connect + mTLS, aucun trafic sur l'Internet public)</text>
+
+  <circle cx="60" cy="978" r="10" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+  <text x="60" y="982" text-anchor="middle" font-size="10.5" font-weight="700" fill="#334155">1</text>
+  <text x="78" y="982" font-size="11" fill="#334155"><tspan font-weight="700">Capteurs IoT &#8594; Redpanda</tspan> &#8212; temps r&#233;el &#183; MQTT/TLS puis API Kafka (mTLS), ~50 Go/mois</text>
+
+  <circle cx="60" cy="1006" r="10" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+  <text x="60" y="1010" text-anchor="middle" font-size="10.5" font-weight="700" fill="#334155">2</text>
+  <text x="78" y="1010" font-size="11" fill="#334155"><tspan font-weight="700">SQL Server (ERP/CRM) &#8594; Redpanda</tspan> &#8212; temps r&#233;el &#183; CDC sur le journal de transactions, API Kafka (mTLS)</text>
+
+  <circle cx="60" cy="1034" r="10" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+  <text x="60" y="1038" text-anchor="middle" font-size="10.5" font-weight="700" fill="#334155">3</text>
+  <text x="78" y="1038" font-size="11" fill="#334155"><tspan font-weight="700">Baie SAN &#8594; Amazon S3</tspan> &#8212; batch nocturne &#183; AWS DataSync (SMB/NFS &#8594; HTTPS/TLS), 10 To puis deltas</text>
+
+  <circle cx="60" cy="1062" r="10" fill="#ffffff" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="60" y="1066" text-anchor="middle" font-size="10.5" font-weight="700" fill="#7c3aed">4</text>
+  <text x="78" y="1066" font-size="11" fill="#334155"><tspan font-weight="700">AD on-premise &#8596; AWS Managed Microsoft AD</tspan> &#8212; continu &#183; relation d'approbation (Kerberos / LDAPS)</text>
+
+  <circle cx="900" cy="978" r="10" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+  <text x="900" y="982" text-anchor="middle" font-size="10.5" font-weight="700" fill="#334155">5</text>
+  <text x="918" y="982" font-size="11" fill="#334155"><tspan font-weight="700">Redpanda &#8594; Amazon S3</tspan> &#8212; micro-batch 5 min &#183; Tiered Storage + sink Connect (Parquet / Iceberg)</text>
+
+  <circle cx="900" cy="1006" r="10" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+  <text x="900" y="1010" text-anchor="middle" font-size="10.5" font-weight="700" fill="#334155">6</text>
+  <text x="918" y="1010" font-size="11" fill="#334155"><tspan font-weight="700">Amazon S3 &#8594; Redshift</tspan> &#8212; batch &#183; commande COPY / auto-copy ; Spectrum interroge Iceberg en direct</text>
+
+  <circle cx="900" cy="1034" r="10" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+  <text x="900" y="1038" text-anchor="middle" font-size="10.5" font-weight="700" fill="#334155">7</text>
+  <text x="918" y="1038" font-size="11" fill="#334155"><tspan font-weight="700">Redpanda &#8594; PySpark</tspan> &#8212; temps r&#233;el &#183; API Kafka, Spark Structured Streaming (Exercice 2)</text>
+
+  <text x="900" y="1066" font-size="10.5" font-style="italic" fill="#64748b">Tous les flux traversants empruntent la liaison priv&#233;e Direct Connect et sont chiffr&#233;s en transit (TLS / mTLS).</text>
+</svg>
