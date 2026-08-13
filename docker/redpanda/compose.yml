@@ -1,0 +1,95 @@
+# Cluster Redpanda mono-broker + console web — Exercice 2, Étape 1.
+#
+# Ce fichier fait tourner le BROKER seul, rien d'autre — utile pour travailler sur le
+# producteur sans lancer Spark. Le pipeline complet est assemblé dans
+# docker/docker-compose.yml et peut reprendre la définition de service ci-dessous telle quelle.
+#
+#   Démarrer :  docker compose -f docker/redpanda/compose.yml up -d
+#   Arrêter  :  docker compose -f docker/redpanda/compose.yml down
+#   Purger   :  docker compose -f docker/redpanda/compose.yml down -v   (efface les données)
+#
+# Adresses (contrat docs/contrat-ticket.md §3) :
+#   depuis un conteneur : redpanda:9092      |  depuis l'hôte : localhost:19092
+#   console web         : http://localhost:8080
+
+services:
+  redpanda:
+    # Version épinglée : `latest` rendrait le POC non reproductible d'une semaine à l'autre.
+    image: redpandadata/redpanda:v26.2.1
+    container_name: redpanda
+    command:
+      - redpanda
+      - start
+      # Deux listeners : « internal » pour le réseau Docker, « external » pour la machine hôte.
+      - --kafka-addr
+      - internal://0.0.0.0:9092,external://0.0.0.0:19092
+      # Adresses ANNONCÉES aux clients après le bootstrap. C'est le point qui casse le plus
+      # souvent : un client annoncé sur la mauvaise adresse se connecte puis reste muet.
+      - --advertise-kafka-addr
+      - internal://redpanda:9092,external://localhost:19092
+      - --pandaproxy-addr
+      - internal://0.0.0.0:8082,external://0.0.0.0:18082
+      - --advertise-pandaproxy-addr
+      - internal://redpanda:8082,external://localhost:18082
+      - --schema-registry-addr
+      - internal://0.0.0.0:8081,external://0.0.0.0:18081
+      - --rpc-addr
+      - redpanda:33145
+      - --advertise-rpc-addr
+      - redpanda:33145
+      # Profil poste de développement : désactive les contrôles de production (AIO, swap,
+      # gouverneur de fréquence) qui empêcheraient le démarrage sur un portable.
+      - --mode
+      - dev-container
+      - --smp
+      - "1"
+      # Désactive la création automatique de topics. Sans cela, un producteur lancé avant la
+      # création du topic le ferait naître silencieusement avec 1 partition — au lieu des 3
+      # imposées par le contrat. On préfère une erreur franche à une violation silencieuse.
+      - --set
+      - redpanda.auto_create_topics_enabled=false
+    ports:
+      - "19092:19092" # API Kafka (hôte)
+      - "18081:18081" # Schema Registry (hôte)
+      - "18082:18082" # HTTP Proxy (hôte)
+      - "9644:9644" # Admin API (hôte)
+    volumes:
+      - redpanda-data:/var/lib/redpanda/data
+    healthcheck:
+      # La console ne doit pas démarrer avant que le cluster soit réellement prêt.
+      test: ["CMD-SHELL", "rpk cluster health | grep -qE 'Healthy:.+true'"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  console:
+    image: redpandadata/console:v3.10.0
+    container_name: redpanda-console
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    # La console se configure par fichier YAML : on l'écrit au démarrage depuis la variable
+    # d'environnement, ce qui évite un fichier de configuration supplémentaire à monter.
+    entrypoint: /bin/sh
+    command: -c 'echo "$$CONSOLE_CONFIG_FILE" > /tmp/config.yml; /app/console'
+    environment:
+      CONFIG_FILEPATH: /tmp/config.yml
+      # Attention : depuis Console v3, `schemaRegistry` est une clé de PREMIER niveau et non plus
+      # une sous-clé de `kafka` — la validation YAML est stricte et le conteneur sort en erreur.
+      CONSOLE_CONFIG_FILE: |
+        kafka:
+          brokers: ["redpanda:9092"]
+        schemaRegistry:
+          enabled: true
+          urls: ["http://redpanda:8081"]
+        redpanda:
+          adminApi:
+            enabled: true
+            urls: ["http://redpanda:9644"]
+    ports:
+      - "8080:8080"
+
+volumes:
+  redpanda-data:
+    driver: local
