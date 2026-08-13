@@ -1,0 +1,15 @@
+# Dépendance de DÉVELOPPEMENT uniquement — elle n'est PAS installée dans l'image.
+#
+# Le runtime réel du projet est le conteneur `spark`, bâti sur l'image
+# officielle `spark:3.5.6-python3` qui embarque déjà PySpark, Scala 2.12 et un JRE
+# (voir docs/contrat-export.md §1). Rien à installer côté hôte pour exécuter le pipeline.
+#
+# Ce fichier ne sert qu'à obtenir l'autocomplétion et le typage de l'API PySpark dans un
+# éditeur. La version est STRICTEMENT alignée sur celle de l'image : une API locale plus
+# récente laisserait passer du code qui échouerait à l'exécution.
+#
+#   python -m pip install -r src/spark/requirements.txt
+#
+# À noter : `import pyspark` réussira, mais lancer le job depuis l'hôte échouera :
+#    PySpark a besoin d'une JVM, et Java n'est pas installé sur la machine de développement.
+pyspark==3.5.6
