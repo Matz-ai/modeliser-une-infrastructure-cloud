@@ -1,10 +1,21 @@
 # Consignes du projet — Modélisez une infrastructure dans le cloud
 
 > Document de référence reprenant **l'intégralité des consignes officielles** du projet
-> OpenClassrooms, recopiées et organisées à partir de la plateforme.
+> OpenClassrooms, y compris le **détail des étapes** (accordéons dépliés sur la plateforme).
 > Parcours : **Data Engineer**.
-> Source : <https://openclassrooms.com/fr/paths/1039/projects/1837/assignment>
-> Capturé le : 2026-06-26 · Page projet mise à jour le : mardi 5 mai 2026 · Durée estimée : **60 heures**.
+> Sources :
+> - <https://openclassrooms.com/fr/paths/1039/projects/1837/assignment>
+> - <https://openclassrooms.com/fr/paths/1039/projects/1837/2804-exercice-1---modelisez-une-infrastructure-hybride-dans-le-cloud>
+> - <https://openclassrooms.com/fr/paths/1039/projects/1837/2806-exercice-2---gerez-des-tickets-clients-avec-redpanda-et-pyspark>
+> - <https://openclassrooms.com/fr/paths/1039/projects/1837/2807-livrables-et-bilan>
+>
+> **Capturé le : 2026-08-14** · Page projet **mise à jour le lundi 27 juillet 2026** · Durée estimée : **60 heures**.
+
+> ### ⚠️ Historique de cette page
+> Une première capture (2026-06-26, basée sur la version du 5 mai 2026) ne contenait que le
+> *chapeau* des exercices. Les **Étapes 1/2/3 détaillées de l'Exercice 1** étaient absentes et
+> imposent des exigences supplémentaires (**entrepôt de données**, **service d'extension d'AD**,
+> **chiffrage des coûts par composant**, **format 400–1200 mots**). Cette version les intègre.
 
 ---
 
@@ -18,7 +29,14 @@ données hybride** qui combine des technologies de **traitement distribué (Spar
 de **pipelines ETL en temps réel**, depuis l'extraction de données issues de multiples
 sources jusqu'à leur transformation et stockage dans le cloud.
 
-Vous allez **découvrir et pratiquer** :
+### Livrables annoncés dans la vue d'ensemble
+
+> *« Vous allez produire les livrables suivants : »*
+> - Une **sélection de composants cloud** pour une architecture hybride
+> - Un **schéma d'architecture** illustrant le flux de données entre on-premise et cloud
+> - Un **pipeline ETL opérationnel** avec Spark et Redpanda
+
+### Vous allez découvrir et pratiquer
 
 - la modélisation d'architectures hybrides et la sélection de services de stockage et de
   traitement dans le cloud ;
@@ -31,18 +49,9 @@ Ce projet renforce les compétences en **manipulation de données massives** et 
 cloud** : compatibilité des environnements on-premise et cloud, pratiques de sécurisation des
 données, et interopérabilité des systèmes.
 
-### Pourquoi ces compétences sont importantes
-
-Compétences cruciales et recherchées en **data engineering**, **architecture de données** et
-**cloud computing**. Concevoir des infrastructures hybrides et orchestrer des flux de données en
-temps réel à grande échelle est essentiel pour les entreprises modernes (scalabilité, analyse en
-temps réel, intégration du cloud).
-
 ---
 
 ## 2. Compétences évaluées
-
-Le projet évalue les compétences suivantes (telles que listées sur la page d'évaluation) :
 
 1. **Représenter visuellement** une infrastructure de gestion des données.
 2. **Transformer** des données afin de les adapter à leur utilisation finale.
@@ -52,26 +61,19 @@ Le projet évalue les compétences suivantes (telles que listées sur la page d'
 6. **Documenter son travail.**
 7. **Identifier et sélectionner** les composants nécessaires à une infrastructure de données.
 
-> ⚠️ La grille d'évaluation détaillée (page « Évaluation ») n'est débloquée qu'une fois les
-> projets précédents validés : *« Votre mentor vous assignera ce projet dès que vous aurez validé
-> les précédents. »* Les 7 compétences ci-dessus constituent donc la base d'évaluation connue.
-
 ---
 
 ## 3. Structure du projet (5 activités)
 
-Le projet est découpé en **5 activités : 3 cours et 2 exercices**.
-
 | # | Type | Intitulé |
 |---|------|----------|
-| 1 | Cours | **Adoptez les approches modernes des bases de données** — comprendre les enjeux des datalakes et lakehouses |
-| 2 | Cours | **Analysez les flux de données en temps réel avec Redpanda** — traitement et analyse en temps réel |
+| 1 | Cours | **Adoptez les approches modernes des bases de données** — datalakes et lakehouses |
+| 2 | Cours | **Analysez les flux de données en temps réel avec Redpanda** |
 | 3 | Exercice 1 | **Modélisez une infrastructure hybride dans le cloud** + fiche d'autoévaluation |
-| 4 | Cours | **Réalisez des calculs distribués avec Spark** — traitement et analyse de données massives |
+| 4 | Cours | **Réalisez des calculs distribués avec Spark** |
 | 5 | Exercice 2 | **Gérez des tickets clients avec Redpanda et PySpark** + fiche d'autoévaluation |
 
-À l'issue du projet : **session de bilan avec le mentor** pour discuter du projet et des
-compétences.
+À l'issue du projet : **session de bilan avec le mentor**.
 
 ---
 
@@ -85,8 +87,7 @@ services cloud pour **moderniser l'infrastructure de gestion des données** tout
 **compatibilité avec le SI on-premise existant**.
 
 > **Rappel — On-premise** : infrastructure informatique installée et hébergée localement, dans les
-> locaux de l'entreprise (serveurs, matériel, logiciels physiquement présents, sous la
-> responsabilité directe de l'organisation), par opposition au cloud.
+> locaux de l'entreprise, sous la responsabilité directe de l'organisation, par opposition au cloud.
 
 ### Contexte — *InduTechData*
 
@@ -98,18 +99,18 @@ l'analyse de données pour le **secteur industriel**.
   et fiable).
 - L'**infrastructure datacenter actuelle atteint ses limites de capacité**. L'entreprise souhaite
   moderniser sa gestion des données pour améliorer **scalabilité et performance**.
-- Elle envisage d'exploiter la flexibilité du cloud, **en particulier les services AWS**, pour
+- Elle envisage d'exploiter la flexibilité du cloud, **en particulier avec les services AWS**, pour
   intégrer les nouvelles solutions tout en assurant la compatibilité avec son SI existant.
-- Objectif : tirer parti du cloud pour une gestion plus évolutive des données tout en maintenant
-  une **interopérabilité fluide** avec l'infrastructure on-premise — notamment pour la **gestion
-  des identités** et la **sécurisation des flux de données**.
+- Objectif : gestion plus évolutive des données tout en maintenant une **interopérabilité fluide**
+  avec l'infrastructure on-premise — notamment pour la **gestion des identités** et la
+  **sécurisation des flux de données**.
 
 #### Description du SI on-premise de InduTechData
 
 - Un **cluster de serveurs SQL Server** hébergeant **40 To de données critiques** : données des
   applications métiers (ERP, CRM), avec sauvegardes régulières et réplication pour la résilience.
-- Une **baie de stockage SAN** (Storage Area Network) pour les **données non structurées (10 To)** :
-  journaux système, fichiers utilisateurs et capteurs IoT.
+- Une **baie de stockage SAN** pour les **données non structurées (10 To)** : journaux système,
+  fichiers utilisateurs et capteurs IoT.
 - Un serveur **Active Directory (AD)** pour l'authentification, l'autorisation et la gestion des
   utilisateurs.
 - Des serveurs dédiés à un **ERP** et un **CRM** (comptabilité, ressources humaines, relation
@@ -125,23 +126,112 @@ l'analyse de données pour le **secteur industriel**.
 
 > *« Cet exercice est entièrement guidé. »*
 
-> 📌 **Choix retenu : les services Redpanda.** La consigne d'action (point 1 de la mission) indique
-> explicitement « *(en utilisant les services Redpanda)* » — c'est donc ce qu'on suit pour la
-> modélisation de la couche cloud.
-> *Note pour le mentor :* le **récit de contexte** mentionne aussi AWS (« la flexibilité du cloud,
-> en particulier avec les services AWS » ; « venant de migrer chez AWS et Redpanda »), mais pas la
-> consigne d'action. Si le mentor attend explicitement AWS, le schéma se transpose facilement.
+> ### 🎯 Arbitrage AWS vs Redpanda — **tranché : c'est les deux**
+> L'Étape 1 ci-dessous demande explicitement de sélectionner un **service de stockage d'objets**,
+> un **entrepôt de données cloud** et un **service d'extension de l'Active Directory** — ce sont
+> des services **AWS** — **et** d'adopter **Redpanda** comme plateforme de streaming.
+> L'architecture attendue est donc **AWS + Redpanda**, pas l'un ou l'autre.
+
+---
+
+### Étape 1 — Identifiez et sélectionnez les composants cloud
+
+**Prérequis**
+- Avoir lu le cours « Adoptez les approches modernes des bases de données ».
+- Avoir lu le cours « Analysez les flux de données en temps réel avec Redpanda ».
+- Avoir compris l'objectif du responsable d'infrastructure cloud d'InduTechData.
+
+**Résultat attendu** — *Identification des composants cloud.*
+
+**Instructions** — À partir des besoins mentionnés, et **en utilisant Redpanda**, sélectionnez les
+services cloud les plus adaptés :
+
+1. **Stockage de données non structurées** (logs, données brutes IoT, fichiers utilisateurs) :
+   - Utilisez un **service de stockage d'objets** dans le cloud pour héberger les données non
+     structurées.
+   - **Justifiez votre choix** en termes de **scalabilité**, **sécurité**, et **interopérabilité
+     avec Redpanda**.
+2. **Entrepôt de données** :
+   - Sélectionnez un **entrepôt de données cloud**. Il permettra de centraliser les données
+     analytiques et de supporter des **requêtes SQL complexes**.
+   - **Expliquez comment synchroniser** les bases **SQL Server on-premise** avec la solution cloud
+     choisie.
+3. **Traitement des données en temps réel (streaming)** :
+   - Adoptez **Redpanda** comme plateforme de streaming — compatible avec l'écosystème **Kafka**,
+     performances optimales pour les flux IoT et les logs.
+   - **Justifiez** par sa **simplicité d'installation**, sa **faible consommation de ressources** et
+     ses **fonctionnalités intégrées** pour orchestrer les flux de données.
+4. **Sécurisation et gestion des accès** :
+   - Proposez un **service pour étendre l'Active Directory on-premise au cloud**.
+   - **Expliquez comment** il garantit une **gestion unifiée des identités et des permissions** sur
+     l'ensemble de l'infrastructure.
+
+**Points de vigilance**
+- Ne pas oublier de **représenter les flux de données critiques** (en temps réel et/ou batch).
+- S'assurer que les **accès utilisateurs et les transferts de données sont sécurisés**.
+- Ne pas **sous-estimer l'impact des coûts** d'utilisation des services cloud.
+
+**Ressources** — Cours « Adoptez les approches modernes des bases de données » · Cours « Analysez
+les flux de données en temps réel avec Redpanda ».
+
+---
+
+### Étape 2 — Représentez visuellement l'infrastructure hybride
+
+**Instructions**
+- Utilisez un **outil de modélisation** (Lucidchart, Draw.io, etc.) pour créer un schéma clair de
+  l'infrastructure hybride, **incluant** :
+  - les **composants cloud et leurs connexions** ;
+  - les **flux de données critiques (IoT, logs)** traités en **temps réel via Redpanda** ;
+  - les **points de synchronisation** entre le SI on-premise (**SQL Server**, **Active Directory**)
+    et les services cloud ;
+  - les **flux de données, avec des indications sur les protocoles de transfert (batch ou temps
+    réel)**.
+- **Exportez** votre schéma au format **PDF/PNG**.
+
+**Résultat attendu** — Un **schéma visuel** de l'infrastructure hybride (**PDF/PNG**).
+
+---
+
+### Étape 3 — Évaluez la compatibilité avec l'environnement SI existant
+
+En analysant les choix de composants et la modélisation de l'architecture, rédigez une évaluation de
+compatibilité de cette infrastructure hybride avec l'environnement SI on-premise d'InduTechData.
+Vous aborderez les éléments suivants :
+
+1. **Sécurité et conformité**
+   - Vérifiez si Redpanda et les solutions cloud garantissent une **protection des flux de données
+     sensibles pendant leur transfert (via SSL/TLS)**.
+   - Évaluez si la **gestion des identités est homogène** entre **AD** et la solution cloud choisie.
+2. **Interopérabilité**
+   - Analysez comment **Redpanda peut s'intégrer avec SQL Server** et d'autres systèmes on-premise
+     pour traiter et transmettre les données.
+   - Assurez-vous que les **flux de données peuvent être automatisés**.
+3. **Scalabilité et gestion des coûts**
+   - Expliquez comment cette architecture **répond aux besoins futurs de croissance** (IoT, logs).
+   - Faites des **recommandations pour surveiller les coûts** d'utilisation des services cloud
+     (ex. : **CloudWatch**, **budget AWS**).
+   - Faites une **première estimation des coûts initiaux et récurrents du projet, par composant**.
+   - N'hésitez pas à consulter un calculateur comme l'**AWS Pricing Calculator**.
+
+**Résultat attendu** — Un **document Word (ou équivalent)** comportant :
+- une **justification documentée pour chaque composant cloud sélectionné** ;
+- une **analyse de la compatibilité** de l'architecture avec le SI on-premise.
+
+> **Format imposé** : document structuré d'**environ 400 à 1200 mots** présentant :
+> - les **avantages** ;
+> - les **limitations** ;
+> - les **points d'attention** pour l'intégration de l'infrastructure hybride.
+
+---
 
 ### Livrables de l'Exercice 1
 
-- **Schéma de l'infrastructure hybride** : un diagramme illustrant la structure de l'infrastructure
+- **Schéma de l'infrastructure hybride** : diagramme illustrant la structure de l'infrastructure
   hybride — **format PDF / PNG**.
-- **Évaluation de compatibilité avec l'environnement SI** : un document détaillant l'évaluation des
+- **Évaluation de compatibilité avec l'environnement SI** : document détaillant l'évaluation des
   choix faits pour assurer une **intégration fonctionnelle** entre l'infrastructure cloud et le SI
   on-premise.
-
-> *Aucun outil de schéma n'est imposé par la consigne.* Le diagramme doit simplement être livré en
-> PDF/PNG (draw.io, Excalidraw, la bibliothèque Python `diagrams`, etc. sont tous acceptables).
 
 ---
 
@@ -150,8 +240,7 @@ l'analyse de données pour le **secteur industriel**.
 ### Contexte
 
 Votre manager chez **InduTech** vous demande de réaliser un **POC (Proof Of Concept)** sur un
-**système de gestion de tickets clients**. Les tickets sont **générés en temps réel** et contiennent
-des informations sur les demandes des clients :
+**système de gestion de tickets clients**. Les tickets sont **générés en temps réel** et contiennent :
 
 - L'**ID du ticket**
 - L'**ID du client**
@@ -174,9 +263,7 @@ tickets en temps réel.
 
 > *« Cet exercice est entièrement guidé. »*
 
-### Étapes détaillées
-
-#### Étape 1 — Configurez Redpanda
+### Étape 1 — Configurez Redpanda
 
 **Instructions**
 - *Installation de Redpanda* : téléchargez et installez Redpanda sur votre machine **ou utilisez une
@@ -185,56 +272,52 @@ tickets en temps réel.
 - *Création d'un topic* : créez un topic nommé **`client_tickets`** dans Redpanda pour stocker les
   données de tickets.
 - Écrivez un **script Python** pour **produire des données de tickets (aléatoires)** dans le topic
-  `client_tickets`. A minima, les tickets doivent contenir : l'ID du ticket, l'ID du client, la date
-  et l'heure de création, la demande, le type de demande, et la priorité.
+  `client_tickets`. A minima : ID du ticket, ID du client, date/heure de création, demande, type de
+  demande, priorité.
 
 **Résultat attendu** — Votre code Python.
 **Outils** — MySQL ou équivalent · Python 3 + Redpanda.
-**Ressources** — Cours « Analysez les flux de données en temps réel avec Redpanda » · Tutoriel
-Redpanda + Python (simulation d'un chat) · Cours Docker (conteneurisation).
+**Ressources** — Cours Redpanda · Tutoriel Redpanda + Python (simulation d'un chat) · Cours Docker.
 
-#### Étape 2 — Traitez les données avec PySpark
+### Étape 2 — Traitez les données avec PySpark
 
 **Instructions**
 - *Lecture des données de Redpanda* : assurez-vous que **PySpark et les dépendances nécessaires pour
   Kafka** sont installées. Écrivez un script **PySpark** pour **lire** les données du topic
   `client_tickets` et les **traiter**.
-- *Transformation et analyse des données* : ajoutez des **transformations et des agrégations** pour
-  générer des insights. *Ex. : ajouter automatiquement le nom d'une équipe de support assignée en
-  fonction du type de demande, ou calculer le nombre de tickets par type.*
+- *Transformation et analyse* : ajoutez des **transformations et des agrégations** pour générer des
+  insights. *Ex. : ajouter automatiquement le nom d'une équipe de support assignée en fonction du
+  type de demande, ou calculer le nombre de tickets par type.*
 
 **Résultat attendu** — Votre code Python (PySpark).
 **Points de vigilance**
 - *Performance du cluster Spark* : configurer adéquatement la **mémoire** et le **nombre de
-  partitions** pour tirer le meilleur parti du cluster.
-- *Résilience* : gérer les **erreurs** pour éviter des interruptions dans le pipeline (ex. reprise
+  partitions**.
+- *Résilience* : **gérer les erreurs** pour éviter des interruptions dans le pipeline (ex. reprise
   après une déconnexion du SQL).
 
 **Outils** — MySQL ou équivalent · Python 3 + PySpark.
 **Ressources** — Cours « Réalisez des calculs distribués avec Spark ».
 
-#### Étape 3 — Exportez les données
+### Étape 3 — Exportez les données
 
-**Instructions**
 - Exportez les **résultats des analyses** dans un fichier au **format adapté (JSON, Parquet ou
   autre)** pour une visualisation ultérieure.
 
-#### Étape 4 — Organisez la conteneurisation
+### Étape 4 — Organisez la conteneurisation
 
-**Instructions**
-- Créez un fichier **Dockerfile** pour **chaque élément** de votre projet :
-  - L'image Docker de **Redpanda**
-  - Le **script générateur de tickets**
-  - Le **script de traitement PySpark**
-- Utilisez **Docker Compose** pour orchestrer, construire et lancer les **conteneurs et volumes** de
-  votre projet.
+- Créez un fichier **Dockerfile** pour **chaque élément** du projet :
+  - l'image Docker de **Redpanda** ;
+  - le **script générateur de tickets** ;
+  - le **script de traitement PySpark**.
+- Utilisez **Docker Compose** pour orchestrer, construire et lancer les **conteneurs et volumes**.
 
 **Résultat attendu** — Un répertoire zippé contenant l'ensemble de votre code (**Redpanda + PySpark
 + Docker**).
+**Outils** — Docker.
 
-#### Étape 5 — Construisez votre documentation
+### Étape 5 — Construisez votre documentation
 
-**Instructions**
 - Rédigez un **README**.
 - Utilisez **Mermaid** afin d'intégrer un **diagramme de votre pipeline** dans votre README.
 - Réalisez une **vidéo** pour expliquer comment **utiliser votre POC** et intégrez-la dans le README.
@@ -242,14 +325,9 @@ Redpanda + Python (simulation d'un chat) · Cours Docker (conteneurisation).
   - Vidéo **courte et efficiente**, **aucune durée maximale imposée**.
 
 **Résultats attendus**
-- *Schéma de flux de données* : diagramme (intégré dans le README via **Mermaid**) montrant le flux
-  de données depuis les différentes sources et illustrant l'architecture du **pipeline ETL**.
+- *Schéma de flux de données* : diagramme (intégré au README via **Mermaid**) montrant le flux de
+  données depuis les différentes sources et illustrant l'architecture du **pipeline ETL**.
 - *Démonstration* : courte **vidéo** présentant votre pipeline ETL et prouvant sa fonctionnalité.
-
-#### Vérifiez votre travail et faites le point avec votre mentor
-
-Pour vérifier que vous n'avez rien oublié, **téléchargez et complétez la fiche d'autoévaluation**.
-Parlez-en avec votre mentor durant votre dernière session de mentorat.
 
 ---
 
@@ -257,7 +335,7 @@ Parlez-en avec votre mentor durant votre dernière session de mentorat.
 
 | Activité | Livrables |
 |----------|-----------|
-| **Exercice 1 — Modélisez une infrastructure hybride** | **Schéma** de l'infrastructure hybride (PDF/PNG) · **Document d'évaluation de compatibilité** avec le SI on-premise |
+| **Exercice 1 — Modélisez une infrastructure hybride** | **Schéma** de l'infrastructure hybride (PDF/PNG) · **Document d'évaluation de compatibilité** (400–1200 mots) |
 | **Exercice 2 — Gérez des tickets clients** | **Code** (répertoire zippé : Redpanda + PySpark + Docker) · **Schéma de flux** (Mermaid, dans le README) · **Vidéo de démonstration** |
 
 ### Convention de nommage du dépôt
@@ -266,46 +344,40 @@ Déposez sur la plateforme, dans un dossier **zip** nommé `Titre_du_projet_nom_
 livrables nommés ainsi : `Nom_Prenom_n°_du_livrable_nom_du_livrable_date_de_démarrage_du_projet`
 (date au format `mmaaaa`).
 
-Exemples (date de démarrage = juin 2026 → `062026`) :
-
 - `Nom_Prenom_1_schema_mmaaaa` → ex. `Zinzen_Mathieu_1_schema_062026`
 - `Nom_Prenom_2_evaluation_mmaaaa` → ex. `Zinzen_Mathieu_2_evaluation_062026`
-- etc.
 
 > Exemple officiel donné par OpenClassrooms : `Janek_Meriem_1_schema_012025`.
+> ❓ **À confirmer** : la date de démarrage effective du projet (`062026` ?).
 
 ---
 
 ## 7. Session de bilan avec le mentor
 
-Pour finaliser le projet, réservez votre **dernière session de mentorat** pour faire un bilan de vos
-compétences. Pendant la session, suivez ces **4 étapes** :
-
-1. **Discutez de votre fiche d'autoévaluation** et des commentaires laissés dans la colonne « Notes ».
-2. **Expliquez les difficultés rencontrées** et ce qui a été plus difficile (pour mieux les aborder
-   à l'avenir).
-3. **Présentez vos points forts**, ce que vous avez apprécié accomplir et pourquoi ces tâches vous
-   ont paru plus faciles.
-4. **Identifiez les actions à mener ensuite** : cours à revoir, éléments à approfondir, points de
-   vigilance.
+1. **Discutez de votre fiche d'autoévaluation** et des commentaires laissés en colonne « Notes ».
+2. **Expliquez les difficultés rencontrées**.
+3. **Présentez vos points forts**.
+4. **Identifiez les actions à mener ensuite**.
 
 ---
 
-## 8. Ressources officielles
+## 8. Synthèse des exigences techniques (checklist)
 
-- Cours : **Adoptez les approches modernes des bases de données** (datalakes, lakehouses, Delta Lake,
-  formats open table, Databricks, gouvernance).
-- Cours : **Analysez les flux de données en temps réel avec Redpanda**.
-- Cours : **Réalisez des calculs distribués avec Spark**.
-- Cours : **Optimisez votre déploiement en créant des conteneurs avec Docker** (Docker Compose,
-  Docker Hub, Docker Swarm).
-- PDF OpenClassrooms : *« Entraînez votre mémoire »* (révisions).
-- **Fiche d'autoévaluation** (à télécharger sur la plateforme — à compléter avant la session bilan).
+### Exercice 1
+- [ ] **Service de stockage d'objets** sélectionné + justifié (scalabilité, sécurité, interop Redpanda).
+- [ ] **Entrepôt de données cloud** sélectionné + **méthode de synchronisation SQL Server → cloud** expliquée.
+- [ ] **Redpanda** justifié (simplicité d'installation, faible conso ressources, fonctionnalités intégrées).
+- [ ] **Service d'extension de l'Active Directory au cloud** proposé + gestion unifiée des identités expliquée.
+- [ ] **Schéma PDF/PNG** : composants cloud + connexions, flux critiques temps réel, points de
+      synchronisation on-prem ↔ cloud, **protocoles de transfert annotés (batch / temps réel)**.
+- [ ] **Évaluation** : SSL/TLS, homogénéité des identités AD ↔ cloud, intégration Redpanda ↔ SQL Server,
+      **automatisation des flux**, scalabilité future.
+- [ ] **Surveillance des coûts** recommandée (CloudWatch, AWS Budgets).
+- [ ] **Estimation chiffrée des coûts initiaux et récurrents, par composant** (AWS Pricing Calculator).
+- [ ] **Format** : document Word ou équivalent, **400–1200 mots**, structuré en
+      **avantages / limitations / points d'attention**.
 
----
-
-## 9. Synthèse des exigences techniques (checklist)
-
+### Exercice 2
 - [ ] Topic Redpanda nommé exactement **`client_tickets`**.
 - [ ] Script Python **producteur** de tickets aléatoires (6 champs imposés).
 - [ ] Script **PySpark consommateur** lisant `client_tickets` (dépendances Kafka pour Spark).
@@ -315,7 +387,7 @@ compétences. Pendant la session, suivez ces **4 étapes** :
 - [ ] Un **Dockerfile par composant** (Redpanda, producteur, PySpark) + **docker-compose**.
 - [ ] **README** documenté avec **diagramme Mermaid** du pipeline ETL.
 - [ ] **Vidéo de démonstration** du POC, liée dans le README.
-- [ ] **Schéma d'architecture hybride** on-premise ↔ cloud (PDF/PNG).
-- [ ] **Document d'évaluation de compatibilité** (sécurité, interopérabilité, coûts).
+
+### Finalisation
 - [ ] Livrables **nommés et zippés** selon la convention.
 - [ ] **Fiche d'autoévaluation** complétée pour la session bilan.
