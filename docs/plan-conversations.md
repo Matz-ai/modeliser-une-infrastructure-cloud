@@ -95,10 +95,12 @@ non trivial, dépendance manquante dans l'environnement.
 détaillées de la consigne. Il s'agit d'une **mise en conformité**, pas d'un travail à zéro.
 
 **À corriger (écarts identifiés)**
-- ❌ **Entrepôt de données cloud absent** → en choisir un (ex. Amazon Redshift) et **expliquer la
-  synchronisation depuis SQL Server on-premise**.
-- ❌ **Service d'extension de l'AD non nommé** → proposer explicitement un service (ex. AWS Directory
-  Service / AWS Managed Microsoft AD) et expliquer la gestion unifiée des identités.
+- ❌ **Entrepôt de données cloud absent** → ajouter **Amazon Redshift** (décision §4.2, non
+  négociable) et **expliquer la synchronisation depuis SQL Server on-premise** (CDC sur tables
+  ERP/CRM ciblées → topic `erp.cdc` → sink Redshift).
+- ❌ **Service d'extension de l'AD non nommé** → nommer **AWS Managed Microsoft AD** en relation
+  d'approbation avec l'AD on-premise, + **IAM Identity Center** (voir §4), et expliquer la gestion
+  unifiée des identités et des permissions.
 - ❌ **Aucune estimation chiffrée des coûts** → chiffrage **initial + récurrent, par composant**.
 - ❌ **Aucune recommandation de surveillance des coûts** → CloudWatch, AWS Budgets, Cost Explorer.
 - ⚠️ **Format du doc** : 1476 mots aujourd'hui → cible **400–1200 mots**, structuré en
@@ -326,12 +328,22 @@ prêts à déposer sur OpenClassrooms.
 
 ---
 
-## 4. Questions ouvertes (à trancher avec Mathieu ou le mentor)
+## 4. Décisions tranchées — **contraignantes pour tous les agents**
 
-| # | Question | Impact | Statut |
+> Ces cinq points sont **arbitrés**. Aucun agent ne les remet en cause sans revenir vers Mathieu.
+
+| # | Décision | Justification | Concerne |
 |---|---|---|---|
-| 1 | **Date de démarrage du projet** pour le nommage (`mmaaaa`) — `062026` ? | Nommage de tous les livrables (Conv. G) | ⬜ à trancher |
-| 2 | Entrepôt de données : **Redshift** (cohérent AWS) ou **Snowflake** ? | Conv. B — justification + chiffrage | ⬜ à trancher |
-| 3 | Granularité du **CDC SQL Server** : tables ERP/CRM ciblées ou base entière ? | Conv. B — schéma + coûts | ⬜ mentor |
-| 4 | **Durée de rétention** des topics avant déchargement Tiered Storage ? | Conv. B — chiffrage des coûts | ⬜ mentor |
-| 5 | Support de la **vidéo** : YouTube (non répertoriée) ou Loom ? | Conv. F | ⬜ à trancher |
+| 1 | **Date de démarrage : `082026`** (août 2026) | Confirmé par Mathieu. Tous les livrables sont nommés `Zinzen_Mathieu_<n>_<nom>_082026`. | Conv. G |
+| 2 | **Entrepôt de données : Amazon Redshift** (Redshift Serverless) | La consigne **n'impose aucun nom** — elle dit seulement « sélectionnez un entrepôt de données cloud ». Redshift est retenu car : le contexte cible explicitement les **services AWS** ; il s'aligne avec S3, Direct Connect, CloudWatch et AWS Budgets déjà présents dans l'archi ; il s'intègre nativement avec **AWS Managed Microsoft AD** (exigence identité de l'Étape 1) ; et l'**AWS Pricing Calculator**, que la consigne cite nommément pour le chiffrage, price Redshift mais pas Snowflake. À noter : **l'Exercice 1 est un exercice de modélisation — rien n'est déployé**, donc la question du palier gratuit ne se pose pas. | Conv. B |
+| 3 | **CDC SQL Server : tables ERP/CRM ciblées**, pas la base entière | Le CDC lit le journal de transactions : le limiter aux tables métier utiles (clients, commandes, factures, tickets) réduit la charge sur SQL Server, réduit l'**egress** facturé, et permet un compte de service en **lecture seule à privilèges minimaux** — le point de vigilance sécurité déjà identifié. Les 40 To ne sont pas migrés. | Conv. B |
+| 4 | **Rétention : 7 jours « chaud » sur les topics, puis Tiered Storage S3 à 365 jours** | 7 jours couvrent largement la reprise après incident et le rejeu Spark, sans payer du disque chaud. Au-delà, l'historique bascule sur S3 (Iceberg, queryable). Cycle de vie S3 : Standard → Glacier Instant Retrieval au-delà de 90 jours pour les données IoT brutes. | Conv. B |
+| 5 | **Vidéo : Loom** | Préférence de Mathieu. Lien intégré dans le README. | Conv. F |
+
+### Service d'extension de l'Active Directory — à retenir pour la Conv. B
+
+Le service à nommer explicitement est **AWS Directory Service for Microsoft Active Directory
+(AWS Managed Microsoft AD)**, en **relation d'approbation (trust)** avec l'AD on-premise, couplé à
+**IAM Identity Center** pour l'accès aux services AWS. C'est lui qui garantit la « gestion unifiée
+des identités et des permissions » exigée à l'Étape 1 — le doc actuel ne parle que des protocoles
+(Kerberos, OIDC), jamais du service.

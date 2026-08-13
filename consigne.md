@@ -344,11 +344,14 @@ Déposez sur la plateforme, dans un dossier **zip** nommé `Titre_du_projet_nom_
 livrables nommés ainsi : `Nom_Prenom_n°_du_livrable_nom_du_livrable_date_de_démarrage_du_projet`
 (date au format `mmaaaa`).
 
-- `Nom_Prenom_1_schema_mmaaaa` → ex. `Zinzen_Mathieu_1_schema_062026`
-- `Nom_Prenom_2_evaluation_mmaaaa` → ex. `Zinzen_Mathieu_2_evaluation_062026`
+**Date de démarrage retenue : `082026` (août 2026).**
+
+- `Zinzen_Mathieu_1_schema_082026`
+- `Zinzen_Mathieu_2_evaluation_082026`
+- `Zinzen_Mathieu_3_code_082026`
+- `Zinzen_Mathieu_4_video_082026`
 
 > Exemple officiel donné par OpenClassrooms : `Janek_Meriem_1_schema_012025`.
-> ❓ **À confirmer** : la date de démarrage effective du projet (`062026` ?).
 
 ---
 
