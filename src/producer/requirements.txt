@@ -1,0 +1,5 @@
+# Client Kafka officiel Confluent (binding librdkafka).
+# Retenu plutôt que kafka-python : librdkafka gère nativement l'idempotence et les retries,
+# et kafka-python n'est pas compatible Python 3.12.
+# Redpanda expose une API Kafka native : aucun adaptateur spécifique n'est nécessaire.
+confluent-kafka>=2.5,<3.0
