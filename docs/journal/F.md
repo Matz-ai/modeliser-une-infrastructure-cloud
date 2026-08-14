@@ -86,6 +86,39 @@ repères, commandes exactes, et la marche à suivre après le tournage.
   4 minutes de construction ; filmer une barre de progression Docker n'apporte rien, et la commande
   montrée reste exactement la même.
 
+### Trois corrections après un retour de Mathieu
+
+Le script a été repris en **téléprompteur** — texte lu mot à mot sur un second écran, gestes séparés
+du texte parlé. Ce passage a révélé trois défauts :
+
+1. **Le chemin de lancement était faux.** `docker/docker-compose.yml` n'existe que sur la branche de
+   E ; le dossier principal est sur celle de B et n'a pas de `docker/`. La commande du README
+   échouait donc avec « The system cannot find the file specified ». Tant que G n'a pas mergé, la
+   démo ne peut tourner **que** dans `worktrees/demo` — c'est désormais écrit en tête du script.
+2. **Le README donnait une syntaxe bash inutilisable sous PowerShell.**
+   `PRODUCER_RATE=50 docker compose …` échoue : PowerShell n'a pas de préfixe de variable en ligne.
+   Les deux syntaxes sont maintenant données, la version PowerShell en premier.
+3. **Le script dépassait réellement les 5 minutes du plan gratuit Loom** — Mathieu avait raison.
+   Mesuré et non estimé : 657 mots, soit **5 min 16 à 5 min 35** sans pause. Raccourci de 120 mots
+   (redondances entre les séquences ② et ⑦), il tient désormais en **4 min 17 à 4 min 53**, à
+   condition d'utiliser les **deux pauses Loom** — rendues explicitement obligatoires plutôt que
+   suggérées. Le repli documenté si ça déborde : **YouTube non répertoriée**, la limite venant de
+   Loom et non du projet, la consigne disant « YouTube, Loom ou autre » et « aucune durée maximale
+   imposée ».
+
+### Chiffres de la démo, mesurés et non estimés
+
+| Étape | Durée |
+|---|---|
+| `build` images en cache | 3 s |
+| `up --build` → 5 services démarrés | 10 s |
+| `up --build` → premier tableau d'insights | 27 s |
+| `restart spark` → reprise visible | 17 s |
+
+Le **débit du producteur est porté à 50 tickets/s pour le tournage** (`$env:PRODUCER_RATE=50`) : au
+défaut de 5/s, les tableaux affichent une trentaine de tickets après une minute — illisible à
+l'écran. À 50/s on dépasse 1700 tickets en 40 secondes et les proportions se stabilisent visiblement.
+
 ### Ce que la vidéo montre, et pourquoi dans cet ordre
 
 Le fil est **la preuve, pas le code** : les tickets arrivent (console Redpanda) → ils sont traités

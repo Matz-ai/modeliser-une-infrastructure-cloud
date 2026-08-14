@@ -103,8 +103,10 @@ docker compose -f docker/docker-compose.yml up --build
 Une seule commande fait tout : construire les trois images, démarrer le broker, **créer le topic**,
 lancer le producteur et démarrer le traitement Spark, dans le bon ordre.
 
-Comptez **2 à 4 minutes** au premier lancement (construction des images), puis une dizaine de
-secondes ensuite.
+Comptez **2 à 4 minutes au tout premier lancement** — le temps de construire les images et de
+télécharger les JARs du connecteur Kafka. Ensuite, images en cache, c'est bien plus rapide : mesuré
+à **10 s** pour que les 5 services soient démarrés, et **27 s** entre la commande et le premier
+tableau d'insights.
 
 ### Ce que vous devez voir
 
@@ -147,8 +149,16 @@ les 10 secondes** :
 
 ### Régler le débit et la cadence
 
+Sous **PowerShell** (Windows) — attention, PowerShell n'accepte pas le préfixe `VAR=valeur` :
+
+```powershell
+$env:PRODUCER_RATE=50; docker compose -f docker/docker-compose.yml up --build
+```
+
+Sous **bash / zsh** (Linux, macOS, Git Bash) :
+
 ```bash
-PRODUCER_RATE=20 SPARK_TRIGGER_SECONDS=5 docker compose -f docker/docker-compose.yml up --build
+PRODUCER_RATE=50 SPARK_TRIGGER_SECONDS=5 docker compose -f docker/docker-compose.yml up --build
 ```
 
 | Variable | Défaut | Effet |
