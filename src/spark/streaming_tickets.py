@@ -385,6 +385,38 @@ def _ecrire_json(df: DataFrame, chemin: str) -> None:
     df.coalesce(1).write.mode("overwrite").json(chemin)
 
 
+def publier_rejets(config: argparse.Namespace):
+    """Fabrique la fonction `foreachBatch` qui écrit la quarantaine — en sautant les lots vides.
+
+    **Pourquoi pas un sink `json` classique ici** : il écrit un fichier par tâche et par
+    micro-batch, **y compris quand il n'y a rien à écrire**. Sur un topic conforme — le cas
+    nominal — `exports/rejets/` se remplissait ainsi d'un fichier de 0 octet toutes les 10 s,
+    soit des milliers de fichiers vides dans un dossier livrable. Constaté à l'exécution.
+
+    Le compromis assumé : `foreachBatch` donne du **au-moins-une-fois** là où le sink fichier
+    garantissait l'exactement-une-fois. Pour une quarantaine de messages malformés, un doublon
+    après reprise est sans conséquence — bien moins gênant que le bruit qu'on supprime.
+    """
+    chemin = f"{config.export_dir}/rejets"
+
+    def ecrire(batch: DataFrame, epoch_id: int) -> None:
+        batch.cache()
+        try:
+            if batch.isEmpty():
+                return
+            nombre = batch.count()
+            batch.coalesce(1).write.mode("append").json(chemin)
+            # En WARNING et non en INFO : un message hors contrat dans le topic signale un
+            # producteur défaillant, c'est exactement ce qu'on veut voir passer dans les logs.
+            LOGGER.warning(
+                "%d message(s) hors contrat mis en quarantaine dans %s", nombre, chemin
+            )
+        finally:
+            batch.unpersist()
+
+    return ecrire
+
+
 def publier_agregats(config: argparse.Namespace):
     """Fabrique la fonction `foreachBatch` qui exporte les agrégats et affiche les insights.
 
@@ -507,9 +539,8 @@ def demarrer_requetes(spark: SparkSession, config: argparse.Namespace) -> list[A
 
     requete_rejets = (
         rejets.writeStream.queryName("rejets")
-        .format("json")
         .outputMode("append")
-        .option("path", f"{config.export_dir}/rejets")
+        .foreachBatch(publier_rejets(config))
         .option("checkpointLocation", f"{config.checkpoint_dir}/rejets")
         .trigger(processingTime=declencheur)
         .start()
