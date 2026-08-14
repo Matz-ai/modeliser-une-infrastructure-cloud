@@ -1,0 +1,194 @@
+# Pipeline complet — Redpanda + producteur de tickets + traitement PySpark.
+# Exercice 2, Étapes 3 et 4.
+#
+#   Tout lancer   :  docker compose -f docker/docker-compose.yml up --build
+#   Tout arrêter  :  docker compose -f docker/docker-compose.yml down
+#   Repartir à zéro (efface topic ET exports) :
+#                    docker compose -f docker/docker-compose.yml down -v
+#
+# Attention : le cluster autonome (docker/redpanda/compose.yml) utilise les mêmes
+#    noms de conteneurs. Arrête-le avant de lancer celui-ci :
+#       docker compose -f docker/redpanda/compose.yml down
+#
+# Contrats de référence : docs/contrat-ticket.md (ticket, topic, ports)
+#                         docs/contrat-export.md (image Spark, exports, checkpoints)
+
+name: poc-tickets
+
+services:
+  # -------------------------------------------------------------------------------------
+  # Le broker. Configuration reprise telle quelle de docker/redpanda/compose.yml
+  # elle est testée, et le contrat §3 interdit d'en changer les adresses.
+  # -------------------------------------------------------------------------------------
+  redpanda:
+    build:
+      context: ..
+      dockerfile: docker/redpanda/Dockerfile
+    image: poc-tickets/redpanda:1.0.0
+    container_name: redpanda
+    command:
+      - redpanda
+      - start
+      # Deux listeners : « internal » pour le réseau Docker, « external » pour la machine hôte.
+      - --kafka-addr
+      - internal://0.0.0.0:9092,external://0.0.0.0:19092
+      # Adresses ANNONCÉES aux clients après le bootstrap : un client dirigé vers la mauvaise
+      # adresse se connecte puis reste muet.
+      - --advertise-kafka-addr
+      - internal://redpanda:9092,external://localhost:19092
+      - --pandaproxy-addr
+      - internal://0.0.0.0:8082,external://0.0.0.0:18082
+      - --advertise-pandaproxy-addr
+      - internal://redpanda:8082,external://localhost:18082
+      - --schema-registry-addr
+      - internal://0.0.0.0:8081,external://0.0.0.0:18081
+      - --rpc-addr
+      - redpanda:33145
+      - --advertise-rpc-addr
+      - redpanda:33145
+      # Profil poste de développement : désactive les contrôles de production qui
+      # empêcheraient le démarrage sur un portable.
+      - --mode
+      - dev-container
+      - --smp
+      - "1"
+      # Pas de création automatique de topic : sinon un producteur lancé trop tôt ferait
+      # naître `client_tickets` avec 1 partition au lieu des 3 du contrat, silencieusement.
+      - --set
+      - redpanda.auto_create_topics_enabled=false
+    ports:
+      - "19092:19092" # API Kafka (hôte)
+      - "18081:18081" # Schema Registry (hôte)
+      - "18082:18082" # HTTP Proxy (hôte)
+      - "9644:9644" # Admin API (hôte)
+    volumes:
+      - redpanda-data:/var/lib/redpanda/data
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health | grep -qE 'Healthy:.+true'"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  # -------------------------------------------------------------------------------------
+  # Création du topic, puis extinction. C'est la pièce qui rend le pipeline démarrable d'une
+  # seule commande : sans elle, il faudrait créer `client_tickets` à la main entre le
+  # démarrage du broker et celui des clients.
+  #
+  # Réutilise l'image du broker : `rpk` y est déjà, inutile d'en construire une autre.
+  # -------------------------------------------------------------------------------------
+  topic-init:
+    build:
+      context: ..
+      dockerfile: docker/redpanda/Dockerfile
+    image: poc-tickets/redpanda:1.0.0
+    container_name: redpanda-topic-init
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    entrypoint: ["/usr/local/bin/creer-topic.sh"]
+    environment:
+      REDPANDA_BROKERS: redpanda:9092
+      # L'API d'admin a sa propre adresse : `-X brokers=` ne la couvre pas, et `rpk cluster
+      # health` viserait sinon le localhost de CE conteneur au lieu du broker.
+      REDPANDA_ADMIN: redpanda:9644
+      TICKET_TOPIC: client_tickets
+      TICKET_PARTITIONS: "3"
+      TICKET_REPLICAS: "1"
+      TICKET_RETENTION_MS: "604800000"
+    restart: "no"
+
+  # -------------------------------------------------------------------------------------
+  # Console web Redpanda — l'écran qui prouve que les tickets arrivent (démo vidéo, Conv. F).
+  # -------------------------------------------------------------------------------------
+  console:
+    image: redpandadata/console:v3.10.0
+    container_name: redpanda-console
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    entrypoint: /bin/sh
+    command: -c 'echo "$$CONSOLE_CONFIG_FILE" > /tmp/config.yml; /app/console'
+    environment:
+      CONFIG_FILEPATH: /tmp/config.yml
+      # Depuis Console v3, `schemaRegistry` est une clé de PREMIER niveau et non plus une
+      # sous-clé de `kafka` — la validation YAML est stricte, le conteneur sort en erreur sinon.
+      CONSOLE_CONFIG_FILE: |
+        kafka:
+          brokers: ["redpanda:9092"]
+        schemaRegistry:
+          enabled: true
+          urls: ["http://redpanda:8081"]
+        redpanda:
+          adminApi:
+            enabled: true
+            urls: ["http://redpanda:9644"]
+    ports:
+      - "8080:8080"
+
+  # -------------------------------------------------------------------------------------
+  # Producteur de tickets.
+  # Ne démarre qu'une fois le topic RÉELLEMENT créé — `service_completed_successfully`
+  # attend la fin du conteneur d'init, pas seulement son démarrage.
+  # -------------------------------------------------------------------------------------
+  producteur:
+    build:
+      context: ..
+      dockerfile: docker/producteur/Dockerfile
+    image: poc-tickets/producteur:1.0.0
+    container_name: ticket-producteur
+    depends_on:
+      topic-init:
+        condition: service_completed_successfully
+    environment:
+      REDPANDA_BROKERS: redpanda:9092
+      TICKET_TOPIC: client_tickets
+      PRODUCER_RATE: "${PRODUCER_RATE:-5}"
+      PRODUCER_MAX_MESSAGES: "${PRODUCER_MAX_MESSAGES:-0}"
+    restart: unless-stopped
+
+  # -------------------------------------------------------------------------------------
+  # Traitement PySpark.
+  #
+  # `restart: "no"` volontaire : une erreur de job doit rester visible dans les logs, pas
+  # défiler dans une boucle de redémarrage.
+  # -------------------------------------------------------------------------------------
+  spark:
+    build:
+      context: ..
+      dockerfile: docker/spark/Dockerfile
+    image: poc-tickets/spark:1.0.0
+    container_name: spark-tickets
+    depends_on:
+      topic-init:
+        condition: service_completed_successfully
+    environment:
+      REDPANDA_BROKERS: redpanda:9092
+      TICKET_TOPIC: client_tickets
+      DATA_DIR: /data
+      EXPORT_DIR: /data/exports
+      CHECKPOINT_DIR: /data/checkpoints
+      SPARK_TRIGGER_SECONDS: "${SPARK_TRIGGER_SECONDS:-10}"
+    command:
+      - /opt/spark/bin/spark-submit
+      - --master
+      - local[*]
+      # Point de vigilance « performance » de l'Étape 2 : mémoire du driver explicite — en
+      # local[*] tout le travail se fait dans la JVM du driver, le défaut de 1 Go est juste.
+      - --driver-memory
+      - ${SPARK_DRIVER_MEMORY:-2g}
+      # Et « nombre de partitions » : 200 par défaut, ce qui est absurde ici. On s'aligne sur
+      # les 3 partitions du topic — au-delà, Spark brasserait des partitions vides.
+      - --conf
+      - spark.sql.shuffle.partitions=3
+      - src/spark/streaming_tickets.py
+    volumes:
+      # Montage lié (et non volume nommé) : les exports doivent être consultables directement
+      # dans ./data depuis Windows — c'est le livrable de l'Étape 3.
+      - ../data:/data
+    ports:
+      - "4040:4040" # Interface web Spark, pendant l'exécution du job
+
+volumes:
+  redpanda-data:
+    driver: local
