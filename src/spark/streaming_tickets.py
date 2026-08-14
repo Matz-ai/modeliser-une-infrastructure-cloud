@@ -27,6 +27,7 @@ Configuration par variables d'environnement (surchargeables en ligne de commande
     SPARK_MAX_OFFSETS        messages max par micro-batch (défaut : 5000)
     SPARK_SHUFFLE_PARTITIONS partitions de shuffle        (défaut : 3)
     SPARK_MAX_REDEMARRAGES   reprises après échec         (défaut : 3)
+    SPARK_MAX_ECHECS_AGREGATS echecs consécutifs tolérés  (défaut : 3)
 
 Exemples :
 
@@ -183,6 +184,12 @@ def resoudre_config() -> argparse.Namespace:
         help="Partitions de shuffle, alignées sur le topic (défaut : 3).",
     )
     parser.add_argument(
+        "--max-echecs-agregats",
+        type=int,
+        default=int(os.getenv("SPARK_MAX_ECHECS_AGREGATS", "3")),
+        help="Échecs consécutifs de publication des agrégats tolérés (défaut : 3).",
+    )
+    parser.add_argument(
         "--max-redemarrages",
         type=int,
         default=int(os.getenv("SPARK_MAX_REDEMARRAGES", "3")),
@@ -203,6 +210,8 @@ def resoudre_config() -> argparse.Namespace:
         parser.error("--shuffle-partitions doit être strictement positif.")
     if args.max_redemarrages < 0:
         parser.error("--max-redemarrages ne peut pas être négatif.")
+    if args.max_echecs_agregats < 1:
+        parser.error("--max-echecs-agregats doit valoir au moins 1.")
     return args
 
 
@@ -426,6 +435,9 @@ def publier_agregats(config: argparse.Namespace):
     donc `.mode("overwrite")`, y redevient utilisable.
     """
     racine = f"{config.export_dir}/agregats"
+    # Compteur d'échecs CONSÉCUTIFS. Voir la clause `except` : c'est lui qui fait la
+    # différence entre « incident passager » et « le pipeline est mort mais fait semblant ».
+    etat = {"echecs": 0}
 
     def ecrire(batch: DataFrame, epoch_id: int) -> None:
         # Le DataFrame est relu quatre fois (le détail + trois vues dérivées) : sans cache,
@@ -479,16 +491,34 @@ def publier_agregats(config: argparse.Namespace):
             par_priorite.show(truncate=False)
             print("  Charge par équipe support", flush=True)
             par_equipe.show(truncate=False)
+            etat["echecs"] = 0
         except Exception:  # noqa: BLE001 — voir le commentaire ci-dessous
-            # Résilience : cet instantané est intégralement réécrit au micro-batch suivant
-            # (mode `complete`), donc en perdre un ne perd aucune donnée. Laisser remonter
-            # l'exception tuerait en revanche tout le pipeline pour un verrou de fichier
-            # passager sur le volume monté — le compromis est clairement dans ce sens.
+            etat["echecs"] += 1
+            # Un instantané est intégralement réécrit au micro-batch suivant (mode `complete`)
+            # : en perdre un ne perd aucune donnée. Laisser remonter l'exception tuerait tout
+            # le pipeline pour un simple verrou de fichier passager — d'où l'absorption.
+            #
+            # MAIS l'absorber INDÉFINIMENT est pire que tout, et ça s'est produit : après un
+            # arrêt brutal ayant laissé le state store incomplet, l'écriture échouait à CHAQUE
+            # lot. Le pipeline paraissait vivant, ne publiait plus rien et n'affichait plus un
+            # seul insight — une panne totale, silencieuse. On ne tolère donc que des échecs
+            # PASSAGERS : au-delà de quelques échecs consécutifs, la panne est structurelle et
+            # doit devenir bruyante (elle remonte à la boucle de reprise, puis sort en erreur).
             LOGGER.exception(
-                "Échec de publication des agrégats au micro-batch %d — instantané ignoré, "
-                "le prochain le réécrira.",
+                "Échec de publication des agrégats au micro-batch %d (%d échec(s) consécutif(s)).",
                 epoch_id,
+                etat["echecs"],
             )
+            if etat["echecs"] >= config.max_echecs_agregats:
+                LOGGER.error(
+                    "%d échecs consécutifs : la panne n'est pas passagère, la requête est "
+                    "interrompue plutôt que de tourner à vide. Si le message porte sur un "
+                    "fichier .delta manquant, le state store est incomplet — supprimer "
+                    "%s/agregats pour repartir proprement.",
+                    etat["echecs"],
+                    config.checkpoint_dir,
+                )
+                raise
         finally:
             batch.unpersist()
 
