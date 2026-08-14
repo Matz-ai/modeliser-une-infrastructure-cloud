@@ -103,6 +103,53 @@ que de promettre un arrêt propre qui n'a pas lieu.
 Piège transmis par E, confirmé à l'exécution : `foreachBatch` est la seule parade. Il redonne un
 DataFrame **statique**, sur lequel `.mode("overwrite")` redevient utilisable.
 
+### 5. Le sink fichier écrit un fichier **vide** à chaque micro-batch
+
+Trouvé pendant la validation de bout en bout. Le sink `json` écrit un fichier par tâche et par
+micro-batch, **y compris quand il n'y a rien à écrire**. Sur un topic conforme — le cas nominal —
+`exports/rejets/` se remplissait d'un fichier de 0 octet toutes les 10 secondes : des milliers de
+fichiers vides dans un dossier livrable.
+
+Passé en `foreachBatch`, qui saute les lots vides et journalise en WARNING le nombre de messages
+écartés. Compromis assumé : **au-moins-une-fois** au lieu d'exactement-une-fois. Pour une
+quarantaine, un doublon après reprise est sans conséquence.
+
+### 6. Absorber une erreur « au cas où » peut fabriquer une panne totale et silencieuse
+
+**Le défaut le plus grave du lot, et il venait de moi.** Il n'est apparu qu'en enchaînant
+arrêt brutal → redémarrage, ce qu'aucun test unitaire n'aurait produit.
+
+Enchaînement constaté :
+
+1. `docker stop` (code 143) interrompt l'écriture du state store **en plein vol** — il reste un
+   fichier `.15.delta…tmp` de **0 octet** dans `checkpoints/agregats/state/0/0/` ;
+2. au redémarrage, la requête `agregats` échoue avec `File …/15.delta does not exist` ;
+3. **et mon gestionnaire d'erreur l'absorbait à chaque lot**, en journalisant sereinement
+   « instantané ignoré, le prochain le réécrira ».
+
+Résultat : un pipeline qui **paraît vivant** — conteneur « Up », requêtes actives, aucune sortie en
+erreur — mais qui ne publie plus un seul agrégat et n'affiche plus un seul insight. Le pire mode de
+défaillance possible.
+
+La justification d'origine ne valait que pour une erreur **passagère** (un verrou de fichier sur le
+volume monté). Appliquée à une panne **permanente**, elle transformait un échec bruyant en panne
+silencieuse. Corrigé : compteur d'échecs **consécutifs**, remis à zéro à chaque succès ; au-delà de
+3 (réglable par `SPARK_MAX_ECHECS_AGREGATS`), l'exception remonte et le job sort en erreur avec le
+message indiquant la manœuvre de réparation.
+
+> **Leçon retenue** : un `except` qui protège d'un incident passager doit **compter**. Sans borne,
+> « on réessaiera au prochain tour » devient « on ne fera plus jamais rien, sans le dire ».
+
+### Recommandation à répercuter (Conv. E ou G)
+
+Les **checkpoints** sont aujourd'hui sur le montage lié Windows (`../data:/data`). Ils n'ont
+pourtant aucune raison d'être lisibles depuis l'hôte : c'est de l'**état interne**, pas un livrable.
+Les basculer sur un **volume Docker nommé** — en laissant `exports/` sur le montage lié, lui bien
+destiné à être consulté — réduirait le risque d'écriture interrompue observé ci-dessus, les
+montages Windows offrant des garanties de durabilité plus faibles qu'un volume natif.
+**Non fait ici** : `docker-compose.yml` appartient à la Conversation E, et le modifier depuis la
+branche de D créerait un conflit de merge pour G.
+
 ---
 
 ## Performance et résilience — les deux points de vigilance de l'Étape 2
@@ -155,6 +202,31 @@ pas été touché**.
 | **Repli** — `request_type` hors énumération | **OK** — ticket **conservé**, équipe `ÉQUIPE_INCONNUE` |
 | Encodage UTF-8 des accents dans les exports | **OK** — fichiers en UTF-8 ; l'affichage abîmé sous PowerShell 5.1 vient du lecteur (ANSI par défaut), pas du fichier |
 
+### Puis validation **du pipeline complet**, les 5 services ensemble
+
+Faite dans un worktree jetable fusionnant `conv-d-pyspark` et `conv-e-export-docker` — **le merge
+D ↔ E ne produit aucun conflit**, information utile pour la Conversation G.
+
+| Contrôle | Résultat |
+|---|---|
+| `docker compose up --build` — **une seule commande** | **OK** — 5 services démarrés dans l'ordre, `topic-init` sort en code 0 |
+| Les 3 images se construisent | **OK** — redpanda, producteur, spark |
+| Spark démarre et consomme | **OK** — 3 requêtes actives en ~3 s, **18 000+ tickets** |
+| Insights en console | **OK** — 3 tableaux toutes les 10 s |
+| Répartition des priorités | **OK** — 7186 / 5386 / 3649 / 1738 sur 17 959, soit **40 / 30 / 20 / 10 %** |
+| Exports Parquet + JSON sous `data/` depuis Windows | **OK** |
+| **Plus aucun fichier vide** dans `exports/rejets/` | **OK** — le dossier n'est même pas créé quand il n'y a aucun rejet |
+| Interface Spark `localhost:4040` | **OK** — 3 requêtes dans l'onglet Structured Streaming |
+| Console Redpanda `localhost:8080` | **OK** — HTTP 200 |
+| **`docker compose restart spark`** | **OK** — dernier lot **9** avant, reprise au lot **10**, cumul poursuivi 18 059 → 18 109 |
+
+> **Nuance importante sur la reprise.** Elle a fonctionné à tous les redémarrages **sauf un** :
+> celui où l'arrêt est tombé pile pendant l'écriture d'un `.delta`. Le state store était alors
+> incomplet et la requête ne pouvait plus repartir — cas décrit au piège n°6, désormais **bruyant**
+> au lieu d'être silencieux, avec la manœuvre de réparation dans le message d'erreur
+> (supprimer `data/checkpoints/agregats/`). C'est aussi ce qui motive la recommandation de
+> basculer les checkpoints sur un volume Docker nommé.
+
 ---
 
 ## Écart au contrat d'export — à valider par E ou G
@@ -174,12 +246,14 @@ Le contrat `docs/contrat-export.md` §2 décrit une arborescence à **deux** sor
 
 ## Reste à faire
 
-- [ ] **Câblage final du service `spark`** dans le compose de E — le nom de script attendu
+- [x] **Câblage final du service `spark`** — le nom de script attendu par E
       (`src/spark/streaming_tickets.py`) et l'absence de `requirements.txt` à installer sont
-      **conformes** à ce que E avait prévu : aucune modification nécessaire de son côté.
-- [ ] **Validation `docker compose up --build` complète** avec les 5 services, à faire une fois D
-      mergée avec E (Conv. G, ou en amont si Mathieu le souhaite).
+      **conformes** à ce que E avait prévu : **aucune modification nécessaire de son côté**.
+- [x] **Validation `docker compose up --build` complète** avec les 5 services — faite dans un
+      worktree jetable fusionnant D et E (voir le tableau ci-dessus). Le merge est sans conflit.
 - [ ] **Screenshots** à prendre par Mathieu (`screenshots/D-*.png`) — procédure ci-dessous.
+- [ ] **Basculer les checkpoints sur un volume Docker nommé** — recommandation à arbitrer par
+      Mathieu, à appliquer par E ou G (voir plus haut).
 
 ## Procédure de rejeu (pour les captures d'écran)
 
