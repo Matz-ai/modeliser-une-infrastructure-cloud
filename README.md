@@ -314,7 +314,7 @@ Le ticket comporte exactement les 6 champs imposés par la consigne, sans champ 
 
 ## Vidéo de démonstration
 
-[Démonstration du pipeline ETL (Loom)](https://www.loom.com/share/LIEN-A-REMPLACER)
+[Démonstration du pipeline ETL (YouTube)](https://youtu.be/1Gm1b4aFUfU)
 
 ## Stack technique
 
